@@ -7,6 +7,7 @@ NEWROOT_DIR="/newroot"
 
 TTY=0
 MINIOS_SHELL_RUN="/run/frecon/vt$TTY"
+SHIMBOOT_PARTITION=$1
 
 main(){
     target=$1 # expected like /dev/sda or something
@@ -26,7 +27,7 @@ main(){
     mount --make-rprivate /
 
     mkdir -p "${NEWROOT_DIR}/bootloader"
-    echo "pivoting root in 2 seconds..."
+    echo "switching root in 2 seconds..."
     sleep 2
     echo "switching to new root with switch_root..., tty1: ${MINIOS_SHELL_RUN}"
     sleep 1
@@ -47,6 +48,8 @@ test_fn() {
     echo "debug: in process PID$$. waiting forever..."
     sleep infinity
 }
+
+drop_to_shell
 
 detect_tty() {
     if [ -f "/bin/frecon-lite" ]; then
@@ -125,4 +128,4 @@ sleep 5
 debug_kernel_settings
 #test_fn
 detect_tty
-main "$1" # $1 is the shimboot rootfs
+main "$SHIMBOOT_PARTITION" # $1 is the shimboot rootfs

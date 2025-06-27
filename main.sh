@@ -1,14 +1,13 @@
 #!/bin/sh
 TEMPDIR=/temp
-PAYLOAD_PATH=${TEMPDIR}/payload.sh
-SHIMBOOT_PART_NUM=2
+SHIMBOOT_PART_NUM=4 # should be 2 in prod
 
 # thanks stack overflow
 SCRIPT_PATH=$(readlink -f -- "$0")
 SCRIPT_DIR=$(dirname -- "$SCRIPT_PATH") # current dir the script is in
 
-mkdir $TEMPDIR
-cp "${SCRIPT_DIR}/*" "$TEMPDIR"
+mkdir -p $TEMPDIR
+cp ${SCRIPT_DIR}/* "$TEMPDIR"
 
 DEV=$(df -P "$SCRIPT_DIR" | awk 'NR==2 { print $1 }')
 DEVNAME=$(basename "$DEV")
@@ -22,9 +21,12 @@ case "$DEVNAME" in
         DISK="/dev/${BASE}${SHIMBOOT_PART_NUM}"
         ;;
     *)
-        DISK="${DEV}${SHIMBOOT_PART_NUM}"
+        echo "something went wrong with detecting your USB drive!! please report this."
+        echo "debug info: ${DEVNAME}"
+        exit
         ;;
 esac
+echo "detected shimboot partition: $DISK"
 
 # pass exec to the setup
-exec "${TEMPDIR}/init.sh" "$TEMPDIR" "$DISK" # pass our tempdir and shimboot boot disk
+exec "${TEMPDIR}/init.sh" "$SCRIPT_DIR" "$TEMPDIR" "$DISK" # pass our tempdir and shimboot boot disk
