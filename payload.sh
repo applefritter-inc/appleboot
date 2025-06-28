@@ -31,7 +31,7 @@ main(){
     sleep 2
     echo "switching to new root with switch_root..., tty1: ${MINIOS_SHELL_RUN}"
     sleep 1
-    exec switch_root "$NEWROOT_DIR" /sbin/init < "$MINIOS_SHELL_RUN" >> "$MINIOS_SHELL_RUN" 2>&1 || {
+    exec switch_root "$NEWROOT_DIR" /sbin/init -c /dev/ttyS0,115200 || {
         # idk if this works
         echo "switch_root failed ($?). dropping to shell..."
         exec /bin/sh
