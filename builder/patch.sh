@@ -16,18 +16,22 @@ copy_modules(){
     local minios_dir=$2 # miniOS initramfs. we will be the ones deleting this directory
     local reco_dir=$3 # ROOT-A rootfs.
 
+    # modules
     rm -rf "${rootfs_dir}/lib/modules"
-    cp -r "${minios_dir}/lib/modules" "${rootfs_dir}/lib/modules"
-    cp -r "${reco_dir}/lib/modules" "${rootfs_dir}/lib/modules" # HOPEFULLY this is enough?
+    mkdir -p "${rootfs_dir}/lib/modules"
+    cp -a "${minios_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
+    cp -a "${reco_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
 
+    # firmware
+    rm -rf "${rootfs_dir}/lib/firmware"
     mkdir -p "${rootfs_dir}/lib/firmware"
-    cp -r --remove-destination "${minios_dir}/lib/firmware/"* "${rootfs_dir}/lib/firmware/"
-    cp -r --remove-destination "${reco_dir}/lib/firmware/"* "${rootfs_dir}/lib/firmware/"
+    cp -a --remove-destination "${minios_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
+    cp -a --remove-destination "${reco_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
 
-    mkdir -p "${rootfs_dir}/lib/modprobe.d/"
-    mkdir -p "${rootfs_dir}/etc/modprobe.d/"
-    cp -r "${reco_dir}/lib/modprobe.d/"* "${rootfs_dir}/lib/modprobe.d/"
-    cp -r "${reco_dir}/etc/modprobe.d/"* "${rootfs_dir}/etc/modprobe.d/"
+    # modprobe configs
+    mkdir -p "${rootfs_dir}/lib/modprobe.d" "${rootfs_dir}/etc/modprobe.d"
+    cp -a "${reco_dir}/lib/modprobe.d/." "${rootfs_dir}/lib/modprobe.d/"
+    cp -a "${reco_dir}/etc/modprobe.d/." "${rootfs_dir}/etc/modprobe.d/"
 
     #decompress kernel modules if necessary - debian won't recognize these otherwise
     local compressed_files="$(find "${rootfs_dir}/lib/modules" -name '*.gz')"
