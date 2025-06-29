@@ -15,23 +15,13 @@ fi
 
 build_dir=$(realpath -m $1)
 mkdir -p $build_dir
-
-need_remount() {
-    local target="$1"
-    local mnt_options="$(findmnt -T "$target" | tail -n1 | rev | cut -f1 -d' '| rev)"
-    echo "$mnt_options" | grep -e "noexec" -e "nodev"
-}
-
-do_remount() {
-    local target="$1"
-    local mountpoint="$(findmnt -T "$target" | tail -n1 | cut -f1 -d' ')"
-    mount -o remount,dev,exec "$mountpoint"
-}
-
-# apparently this is important
-if [ "$(need_remount "$build_dir")" ]; then
-  do_remount "$build_dir"
+mp=$(findmnt -n -o TARGET --target "$build_dir")
+opts=$(findmnt -n -o OPTIONS --target "$build_dir")
+if echo "$opts" | grep -Eq '(^|,)noexec|nodev'; then
+    echo ">>> Remounting $mp with exec,dev"
+    mount -o remount,exec,dev "$mp"
 fi
+
 
 echo "bootstrapping our debian chroot..."
 debootstrap --components=$COMPONENTS --arch $ARCH "$DEBIAN_RELEASE" "$build_dir" http://deb.debian.org/debian/
