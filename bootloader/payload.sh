@@ -32,7 +32,9 @@ main(){
     sleep 1
 
     # quickly unload all kernel modules first
-    modprobe -r -a $(awk 'NR>1 {print $1}' /proc/modules) || true
+    for m in $(lsmod | awk 'NR>1 {print $1}' | tac); do
+        modprobe -r "$m" 2>/dev/null || true
+    done
     
     # /dev/ttyS0,115200 for debugging with SuzyQ on a dev miniOS image.
     exec switch_root "$NEWROOT_DIR" /sbin/init -c /dev/ttyS0,115200 || {
