@@ -115,6 +115,7 @@ mkfs.ext4 "${appleboot_loop}p1" # bootloader
 mkfs.ext4 "${appleboot_loop}p2" # rootfs
 
 # shift bootloader files into bootloader partition
+echo "shifting bootloader files..."
 mkdir -p bootloader_mnt
 mount "${appleboot_loop}p1" "bootloader_mnt"
 cp -arv bootloader/* "bootloader_mnt"
@@ -122,6 +123,7 @@ umount "${appleboot_loop}p1"
 rm -r bootloader_mnt
 
 # shift rootfs chroot into rootfs partition
+echo "shifting rootfs files..."
 mkdir -p rootfs_mnt
 mount "${appleboot_loop}p2" "rootfs_mnt"
 cp -ar rootfs-chroot/* "rootfs_mnt"

@@ -18,6 +18,7 @@ copy_modules(){
 
     rm -rf "${rootfs_dir}/lib/modules"
     cp -r "${minios_dir}/lib/modules" "${rootfs_dir}/lib/modules"
+    cp -r "${reco_dir}/lib/modules" "${rootfs_dir}/lib/modules" # HOPEFULLY this is enough?
 
     mkdir -p "${rootfs_dir}/lib/firmware"
     cp -r --remove-destination "${minios_dir}/lib/firmware/"* "${rootfs_dir}/lib/firmware/"

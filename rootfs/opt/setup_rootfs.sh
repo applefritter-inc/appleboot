@@ -4,6 +4,7 @@ set -euo pipefail
 
 HOSTNAME="appleboot"
 PACKAGES="task-xfce-desktop dbus-x11"
+ESSENTIAL_PACKAGES="cloud-utils zram-tools sudo command-not-found bash-completion libfuse2 libfuse3-*"
 DEBIAN_RELEASE="bookworm"
 USERNAME="user"
 ROOT_PASS="root"
@@ -42,7 +43,8 @@ apt-get install -y --reinstall --allow-downgrades $installed_systemd
 # enable kill frecon service
 systemctl enable kill-frecon.service
 
-apt-get install -y cloud-utils zram-tools sudo command-not-found bash-completion libfuse2 libfuse3-*
+# install ESSENTIAL_PACKAGES
+apt-get install -y $ESSENTIAL_PACKAGES
 
 echo "ALGO=lzo" >> /etc/default/zramswap
 echo "PERCENT=100" >> /etc/default/zramswap
@@ -64,6 +66,7 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 END
 
+# install PACKAGES(non essential packages)
 apt-get install -y $PACKAGES
 
 # the appleboot loader already disables selinux, do we still need to disable it here?
