@@ -1,11 +1,12 @@
 #!/bin/bash
 
 RECO_BIN=""
-# create appleboot image
 BOARD="nissa"
+# create appleboot image
 ROOTFS_DIR="rootfs-chroot"
 RECO_ZIP="reco.zip"
-APPLEBOOT_IMAGE="appleboot.bin"
+APPLEBOOT_IMAGE="appleboot-${BOARD}.bin"
+DELETE_ROOTFS_CHROOT="y"
 
 if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
@@ -134,3 +135,8 @@ rm -r rootfs_mnt
 losetup -d $appleboot_loop
 
 echo "appleboot has finished building! the image should be at $(pwd)/$APPLEBOOT_IMAGE"
+
+if [ -n "$DELETE_ROOTFS_CHROOT" ]; then
+    echo "cleaning up rootfs-chroot..."
+    rm -rf rootfs-chroot
+fi

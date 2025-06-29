@@ -90,7 +90,7 @@ init_frecon(){
 
 disable_processes(){
     echo 0 > /sys/fs/selinux/enforce
-    echo 0 > /proc/sys/kernel/loadpin/enforce
+    echo 0 > /proc/sys/kernel/loadpin/enforce # allow the kernel modules to load
     kill -TERM -1
     sleep 1
     kill -KILL -1
