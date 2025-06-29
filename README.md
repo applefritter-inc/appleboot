@@ -9,7 +9,7 @@ this project supports all boards that are on disk layout v3, list here:
 ```
 nissa, skyrim, guybrush, corsola, rex, brya, brox, skywalker, rauru, cherry, geralt
 ```
-2. your crOS version must be <v132, and if you have upgraded previously, you cannot downgrade anymore.
+2. your crOS version must be <v132, and if you have upgraded previously, you cannot downgrade anymore. \
 you must not have upgraded to crOS v132, or else this would NOT work, because BadApple has been patched on that version.
 
 ## how to use
