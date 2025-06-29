@@ -1,4 +1,6 @@
 #!/bin/bash
+# build debian rootfs for appleboot
+set -euo pipefail
 
 ARCH="amd64"
 COMPONENTS="main,contrib,non-free,non-free-firmware"
@@ -6,12 +8,16 @@ DEBIAN_RELEASE="bookworm"
 CHROOT_SETUP="/opt/setup_rootfs.sh"
 CHROOT_MOUNTS="/sys /proc /dev /run"
 
-# build debian rootfs for appleboot
-
 if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
     exit 1
 fi
+
+fatal_exit() {
+    echo "FATAL: $1"
+    echo "this is fatal, exiting..."
+    exit 1
+}
 
 build_dir=$(realpath -m $1)
 mkdir -p $build_dir
@@ -34,7 +40,7 @@ if [ "$(need_remount "$build_dir")" ]; then
 fi
 
 echo "bootstrapping our debian chroot..."
-debootstrap --components=$COMPONENTS --arch $ARCH "$DEBIAN_RELEASE" "$build_dir" http://deb.debian.org/debian/
+debootstrap --components=$COMPONENTS --arch $ARCH "$DEBIAN_RELEASE" "$build_dir" http://deb.debian.org/debian/ || fatal_exit "debootstrap failed!"
 
 echo "copying rootfs setup files..." # stolen from shimboot thanks
 cp -arv rootfs/* "$build_dir"

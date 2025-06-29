@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # the whole thing was basically stolen from shimboot
 
 HOSTNAME="appleboot"
