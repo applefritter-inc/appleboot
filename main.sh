@@ -53,3 +53,5 @@ fi
 
 rootfs_size="$(du -sm "$ROOTFS_DIR" | cut -f 1)"
 rootfs_part_size=$(( rootfs_size * 12 / 10 + 5 ))
+
+echo $rootfs_part_size
