@@ -21,7 +21,7 @@ main(){
 
     # unload kernel modules before moving mounts, or else lsmod will fail due to /proc/modules not existing...
     for m in $(lsmod | awk 'NR>1 {print $1}' | tac); do
-        modprobe -r "$m" 2>/dev/null || tru
+        modprobe -r "$m" 2>/dev/null || true
     done
 
     move_mounts "$NEWROOT_DIR"

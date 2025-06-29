@@ -66,7 +66,7 @@ END
 
 apt-get install -y $PACKAGES
 
-# the appleboot loader already disables this, do we still need to disable this here?
+# the appleboot loader already disables selinux, do we still need to disable it here?
 echo "SELINUX=disabled" >> /etc/selinux/config
 
 useradd -m -s /bin/bash -G sudo $USERNAME
