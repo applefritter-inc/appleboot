@@ -12,7 +12,7 @@ cp "${SCRIPT_DIR}"/* "$TEMPDIR"
 
 list_partitions() {
     echo "-------------------------------"
-    echo "available appleboot_rootfs partitions:"
+    echo "available appleboot_rootfs volumes:"
     count=0
 
     for udev_dir in by-partlabel by-label; do
