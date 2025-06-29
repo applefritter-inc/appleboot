@@ -1,0 +1,10 @@
+[Unit]
+Description=kill frecon to allow xorg to start
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/kill_frecon
+RemainAfterExit=true
+
+[Install]
+WantedBy=graphical.target

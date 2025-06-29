@@ -7,7 +7,9 @@ SCRIPT_PATH=$(readlink -f -- "$0")
 SCRIPT_DIR=$(dirname -- "$SCRIPT_PATH") # current dir the script is in
 
 mkdir -p $TEMPDIR
-cp ${SCRIPT_DIR}/* "$TEMPDIR"
+cp ${SCRIPT_DIR}/* "$TEMPDIR" # from here, we can start importing scripts.
+
+. "$TEMPDIR"/helper.sh
 
 DEV=$(df -P "$SCRIPT_DIR" | awk 'NR==2 { print $1 }')
 DEVNAME=$(basename "$DEV")
