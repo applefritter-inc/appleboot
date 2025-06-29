@@ -107,6 +107,9 @@ rootfs_part_size=$(( rootfs_size * 12 / 10 + 5 ))
 create_image "appleboot.bin" 20 "$rootfs_part_size" "debian"
 appleboot_loop=$(losetup -f --show -P "appleboot.bin")
 
+# fix some gpt backup header errors
+sgdisk -e "$appleboot_loop"
+
 # partition disks
 mkfs.ext4 "${appleboot_loop}p1" # bootloader
 mkfs.ext4 "${appleboot_loop}p2" # rootfs
