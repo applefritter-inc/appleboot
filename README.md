@@ -24,8 +24,9 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 7. open the VT3 with `CTRL+ALT+F3`
 8. find the usb stick identifier with `fdisk -l`
 9. when you've found the disk identifier, run the payload with `mount /dev/sdX1 /usb && /usb/main.sh` 
-10. the payload will automatically start, and debian will run.
+10. select your appleboot root disk with the selector, or select a disk manually.
+11. you will then proceed to boot into debian!
 
 ## credits
-- [appleflyer](https://github.com/appleflyerv3): finding BadApple, writing the scripts
+- [appleflyer](https://github.com/appleflyerv3): finding [BadApple](https://github.com/applefritter-inc/BadApple), writing the scripts
 - [vk6/ading2210](https://github.com/ading2210/): the [shimboot](https://github.com/ading2210/shimboot) project source code. appleboot is technically a "copyleft" of the shimboot project, and appleboot's source code has been partially written with the shimboot source.
