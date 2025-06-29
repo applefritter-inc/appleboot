@@ -4,7 +4,7 @@ ARCH="amd64"
 COMPONENTS="main,contrib,non-free,non-free-firmware"
 DEBIAN_RELEASE="bookworm"
 CHROOT_SETUP="/opt/setup_rootfs.sh"
-CHROOT_MOUNTS="sys proc dev run"
+CHROOT_MOUNTS="/sys /proc /dev /run"
 
 # build debian rootfs for appleboot
 
@@ -42,8 +42,8 @@ cp -arv rootfs/* "$build_dir"
 echo "bind mounting necessary mounts..."
 for mnt in $CHROOT_MOUNTS; do
     # $mnt is a full path (leading '/'), so no '/' joiner
-    mkdir -p "$newroot_mnt$mnt"
-    mount --make-rslave --rbind "$mnt" "${build_dir}/${mnt}"
+    mkdir -p "$build_dir$mnt"
+    mount --make-rslave --rbind "$mnt" "${build_dir}${mnt}"
 done
 
 echo "chrooting into our build directory and running the rootfs setup script..."
@@ -51,7 +51,7 @@ LC_ALL=C chroot $build_dir /bin/sh -c "$CHROOT_SETUP"
 
 echo "chroot setup script completed, unmounting bindmounts..."
 for mnt in $CHROOT_MOUNTS; do
-    umount -l "$build_dir/$mnt"
+    umount -l "$build_dir$mnt"
 done
 
 echo "rootfs created!"
