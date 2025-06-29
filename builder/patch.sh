@@ -98,6 +98,8 @@ echo "downloading and copying firmware"
 copy_firmware $(basename $target_rootfs)
 
 echo "deleting/unmounting rootfses"
+sync
+sync
 umount reco_rootfs
 rm -rf reco_rootfs minios_rootfs
 losetup -d $reco_loop
