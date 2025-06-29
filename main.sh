@@ -42,6 +42,53 @@ print(reco_url)
     mv -- "$out" reco.bin
 }
 
+partition_disk() {
+  local image_path=$(realpath -m "${1}")
+  local bootloader_size="$2"
+  local rootfs_name="$3"
+  #create partition table with fdisk
+  ( 
+    echo g #new gpt disk label
+
+    #create bootloader partition
+    echo n
+    echo #accept default parition number
+    echo #accept default first sector
+    echo "+${bootloader_size}M" #set partition size
+    echo t #change partition type
+    echo #accept default parition number
+    echo 3CB8E202-3B7E-47DD-8A3C-7FF2A13CFCEC #chromeos rootfs type
+
+    #create rootfs partition
+    echo n
+    echo #accept default parition number
+    echo #accept default first sector
+    echo #accept default size to fill rest of image
+    echo x #enter expert mode
+    echo n #change the partition name
+    echo #accept default partition number
+    echo "shimboot_rootfs:$rootfs_name" #set partition name
+    echo r #return to normal more
+
+    #write changes
+    echo w
+  ) | fdisk $image_path
+}
+
+create_image() {
+    local image_path=$(realpath -m "${1}")
+    local bootloader_size="$2"
+    local rootfs_size="$3"
+    local rootfs_name="$4"
+
+    # bootloader + rootfs
+    local total_size=$((1 + 32 + $bootloader_size + $rootfs_size))
+    rm -rf "${image_path}"
+    fallocate -l "${total_size}M" "${image_path}"
+    partition_disk $image_path $bootloader_size $rootfs_name
+}
+
+# make our debian rootfs
 ./builder/build.sh "$ROOTFS_DIR"
 
 if [ -z "${RECO_BIN}" ]; then
@@ -49,9 +96,34 @@ if [ -z "${RECO_BIN}" ]; then
     RECO_BIN="reco.bin"
 fi
 
+# patch the built rootfs with chromeOS kernel modules
 ./builder/patch.sh "$ROOTFS_DIR" "$RECO_BIN"
 
+# calculate rootfs size to build image
 rootfs_size="$(du -sm "$ROOTFS_DIR" | cut -f 1)"
 rootfs_part_size=$(( rootfs_size * 12 / 10 + 5 ))
 
-echo $rootfs_part_size
+# create image
+create_image "appleboot.bin" 20 "$rootfs_part_size" "debian"
+appleboot_loop=$(losetup -f --show -P "appleboot.bin")
+
+# partition disks
+mkfs.ext4 "${appleboot_loop}p1" # bootloader
+mkfs.ext4 "${appleboot_loop}p2" # rootfs
+
+# shift bootloader files into bootloader partition
+mkdir -p bootloader_mnt
+mount "${appleboot_loop}p1" "bootloader_mnt"
+cp -arv bootloader/* "bootloader_mnt"
+umount "${appleboot_loop}p1"
+rm -r bootloader_mnt
+
+# shift rootfs chroot into rootfs partition
+mkdir -p rootfs_mnt
+mount "${appleboot_loop}p2" "rootfs_mnt"
+cp -ar rootfs-chroot/* "rootfs_mnt"
+umount "${appleboot_loop}p2"
+rm -r rootfs_mnt
+
+# finally, detach the appleboot.bin image from the loop device YAY
+losetup -d $appleboot_loop
