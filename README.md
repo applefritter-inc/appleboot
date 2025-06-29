@@ -3,6 +3,8 @@ this project allows you to boot linux on keyrolled devices with code execution i
 it is heavily built on the way that shimboot works, albeit with a lot of modifications. \
 it also heavily relies on [BadApple](https://github.com/applefritter-inc/BadApple), which allowed for the code execution in miniOS.
 
+currently, only `debian` is supported. would i add support for more distros in the future? probably not. maybe i'd merge PR requests, but i might not do much with this project after release. no promises.
+
 ## support
 1. your board must be disk layout v3 \
 this project supports all boards that are on disk layout v3, list here:
