@@ -7,8 +7,6 @@ CHROOT_SETUP="/opt/setup_rootfs.sh"
 
 # build debian rootfs for appleboot
 
-. ./helper.sh
-
 if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
     exit 1
