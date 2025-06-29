@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh +x
 
 TTY=0
 MINIOS_SHELL_RUN="/run/frecon/vt$TTY"

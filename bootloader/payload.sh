@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh +x
 
 SCRIPT_VERSION="1.1"
 SCRIPT_TYPE="beta" # can be stable, beta, test, PoC
@@ -19,23 +19,21 @@ main(){
         mount -o bind "$TTY1" /dev/console
     fi
 
+    # unload kernel modules before moving mounts, or else lsmod will fail due to /proc/modules not existing...
+    for m in $(lsmod | awk 'NR>1 {print $1}' | tac); do
+        modprobe -r "$m" 2>/dev/null || tru
+    done
+
     move_mounts "$NEWROOT_DIR"
-    echo "mounts moved! switching root. waiting 5 seconds to do so..."
-    sleep 5
+    echo "mounts moved! switching root. waiting 2 seconds to do so..."
+    sleep 2
 
     mount --make-rprivate /
-
     mkdir -p "${NEWROOT_DIR}/bootloader"
-    echo "switching root in 2 seconds..."
-    sleep 2
-    echo "switching to new root with switch_root..., tty1: ${MINIOS_SHELL_RUN}"
+
+    echo "switching to new root with switch_root in 2 seconds... tty1: ${MINIOS_SHELL_RUN}"
     sleep 1
 
-    # quickly unload all kernel modules first
-    for m in $(lsmod | awk 'NR>1 {print $1}' | tac); do
-        modprobe -r "$m" 2>/dev/null || true
-    done
-    
     # /dev/ttyS0,115200 for debugging with SuzyQ on a dev miniOS image.
     exec switch_root "$NEWROOT_DIR" /sbin/init -c /dev/ttyS0,115200 || {
         # doesnt work yet
@@ -107,9 +105,9 @@ exec >"$MINIOS_SHELL_RUN" 2>&1
 # why is this not in the main.sh script?!?!?!? frecon is cleared when the hijack payload is called. this prompt should be on the screen.
 echo "appleboot switch_root payload!"
 echo "version v${SCRIPT_VERSION}. ${SCRIPT_TYPE} edition"
-echo "in process PID$$.(should be PID1)"
-echo "sleeping for 5 sec..."
-sleep 5
+echo "in process PID($$), (we should be PID1)"
+echo "sleeping for 2 sec..."
+sleep 2
 
 # output kernel logs
 #cat /dev/kmsg > "$MINIOS_SHELL_RUN" 2>&1 &

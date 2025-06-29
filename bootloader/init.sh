@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh +x
 
 ORIGINAL_SCRIPT_DIR=$1
 PAYLOAD_FILE="$2/payload.sh"
@@ -17,7 +17,7 @@ if ! [ "$(cat /proc/sys/kernel/yama/ptrace_scope)" = "0" ]; then
 fi
 
 echo "hijacking pid 1..."
-sleep 2
+sleep 1
 $CLAMIDE_BIN -p 1 --syscall execve "str:$PAYLOAD_FILE" "arr:str:$PAYLOAD_FILE,str:$MAIN_DISK_DEV,int:0" "int:0" # hijack PID 1 and make it call our payload
 
 sleep infinity

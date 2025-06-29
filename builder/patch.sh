@@ -33,8 +33,8 @@ copy_modules(){
     if [ "$compressed_files" ]; then
         echo "$compressed_files" | xargs gunzip
         for kernel_dir in "$rootfs_dir/lib/modules/"*; do
-        local version="$(basename "$kernel_dir")"
-        depmod -b "$rootfs_dir" "$version"
+            local version="$(basename "$kernel_dir")"
+            depmod -b "$rootfs_dir" "$version"
         done
     fi
 }

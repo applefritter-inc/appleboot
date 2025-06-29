@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/sh +x
+
 TEMPDIR=/temp
 APPLEBOOT_PART_NUM=2 # should be 2 in prod
 
