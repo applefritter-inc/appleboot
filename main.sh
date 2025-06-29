@@ -5,6 +5,7 @@ RECO_BIN=""
 BOARD="nissa"
 ROOTFS_DIR="rootfs-chroot"
 RECO_ZIP="reco.zip"
+APPLEBOOT_IMAGE="appleboot.bin"
 
 if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
@@ -40,6 +41,7 @@ print(reco_url)
     unzip "$RECO_ZIP"
     out=$(unzip -Z1 "$RECO_ZIP")
     mv -- "$out" reco.bin
+    rm -r "$RECO_ZIP" # remove this, we don't need it anymore
 }
 
 partition_disk() {
@@ -51,16 +53,13 @@ partition_disk() {
     echo g #new gpt disk label
 
     #create bootloader partition
-    echo n
+    echo n #new partition
     echo #accept default parition number
     echo #accept default first sector
-    echo "+${bootloader_size}M" #set partition size
-    echo t #change partition type
-    echo #accept default parition number
-    echo 3CB8E202-3B7E-47DD-8A3C-7FF2A13CFCEC #chromeos rootfs type
+    echo "+${bootloader_size}M" #partition size is 1M
 
     #create rootfs partition
-    echo n
+    echo n #new partition
     echo #accept default parition number
     echo #accept default first sector
     echo #accept default size to fill rest of image
@@ -68,7 +67,7 @@ partition_disk() {
     echo n #change the partition name
     echo #accept default partition number
     echo "appleboot_rootfs:$rootfs_name" #set partition name
-    echo r #return to normal more
+    echo r #return to normal mode
 
     #write changes
     echo w
@@ -82,7 +81,8 @@ create_image() {
     local rootfs_name="$4"
 
     # bootloader + rootfs
-    local total_size=$((1 + 32 + $bootloader_size + $rootfs_size))
+    local extra_rootfs_space=100
+    local total_size=$(($extra_rootfs_space + $bootloader_size + $rootfs_size))
     rm -rf "${image_path}"
     fallocate -l "${total_size}M" "${image_path}"
     partition_disk $image_path $bootloader_size $rootfs_name
@@ -104,8 +104,8 @@ rootfs_size="$(du -sm "$ROOTFS_DIR" | cut -f 1)"
 rootfs_part_size=$(( rootfs_size * 12 / 10 + 5 ))
 
 # create image
-create_image "appleboot.bin" 20 "$rootfs_part_size" "debian"
-appleboot_loop=$(losetup -f --show -P "appleboot.bin")
+create_image "$APPLEBOOT_IMAGE" 20 "$rootfs_part_size" "debian"
+appleboot_loop=$(losetup -f --show -P "$APPLEBOOT_IMAGE")
 
 # fix some gpt backup header errors
 sgdisk -e "$appleboot_loop"
@@ -128,5 +128,7 @@ cp -ar rootfs-chroot/* "rootfs_mnt"
 umount "${appleboot_loop}p2"
 rm -r rootfs_mnt
 
-# finally, detach the appleboot.bin image from the loop device YAY
+# finally, detach the image from the loop device YAY
 losetup -d $appleboot_loop
+
+echo "appleboot has finished building! the image should be at $(pwd)/$APPLEBOOT_IMAGE"
