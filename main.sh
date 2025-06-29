@@ -81,7 +81,7 @@ create_image() {
     local rootfs_name="$4"
 
     # bootloader + rootfs
-    local extra_rootfs_space=100
+    local extra_rootfs_space=100 # give the rootfs extra space
     local total_size=$(($extra_rootfs_space + $bootloader_size + $rootfs_size))
     rm -rf "${image_path}"
     fallocate -l "${total_size}M" "${image_path}"
