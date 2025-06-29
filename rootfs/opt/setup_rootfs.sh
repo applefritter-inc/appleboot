@@ -72,8 +72,8 @@ echo "SELINUX=disabled" >> /etc/selinux/config
 useradd -m -s /bin/bash -G sudo $USERNAME
 
 # set passwords for root and user
-yes "$ROOT_PASS" | passwd "root"
-yes "$USER_PASS" | passwd $USERNAME
+yes "$ROOT_PASS" | passwd "root" || true
+yes "$USER_PASS" | passwd $USERNAME || true
 
 # clean the apt caches
 apt-get clean
