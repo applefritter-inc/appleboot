@@ -19,13 +19,14 @@ copy_modules(){
     # modules
     rm -rf "${rootfs_dir}/lib/modules"
     mkdir -p "${rootfs_dir}/lib/modules"
-    #cp -a "${minios_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
-    cp -a "${reco_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
+    cp -a "${minios_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
+    # we do not use the recovery image modules here, because they are of a different kernel!
+    #cp -a "${reco_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
 
     # firmware
     rm -rf "${rootfs_dir}/lib/firmware"
     mkdir -p "${rootfs_dir}/lib/firmware"
-    #cp -a --remove-destination "${minios_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
+    cp -a --remove-destination "${minios_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
     cp -a --remove-destination "${reco_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
 
     # modprobe configs
@@ -89,12 +90,12 @@ reco_loop=$(losetup -f --show -P "$reco_bin")
 mkdir -p reco_rootfs minios_rootfs
 mount -o ro "${reco_loop}p3" "reco_rootfs"
 
-# echo "extracting miniOS kernel blob"
-# dd if="${reco_loop}p9" of=minios_kernel.blob bs=512 status=progress
+echo "extracting miniOS kernel blob"
+dd if="${reco_loop}p9" of=minios_kernel.blob bs=512 status=progress
 
-# echo "extracting miniOS initramfs"
-# extract_miniOS_initramfs "minios_kernel.blob" "minios_extract" "minios_rootfs"
-# rm -rf minios_extract minios_kernel.blob
+echo "extracting miniOS initramfs"
+extract_miniOS_initramfs "minios_kernel.blob" "minios_extract" "minios_rootfs"
+rm -rf minios_extract minios_kernel.blob
 
 echo "copying modules"
 copy_modules $(basename $target_rootfs) "minios_rootfs" "reco_rootfs"
