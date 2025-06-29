@@ -1,5 +1,7 @@
 #!/bin/sh +x
 
+SCRIPT_VERSION="1.0"
+SCRIPT_TYPE="stable" # can be stable, beta, test, PoC
 TEMPDIR=/temp
 APPLEBOOT_PART_NUM=2 # should be 2 in prod
 PREFIX="appleboot_rootfs:"
@@ -11,6 +13,9 @@ mkdir -p "$TEMPDIR"
 cp "${SCRIPT_DIR}"/* "$TEMPDIR"
 
 list_partitions() {
+    echo "-------------------------------"
+    echo "welcome to appleboot!"
+    echo "version v${SCRIPT_VERSION}. ${SCRIPT_TYPE} edition"
     echo "-------------------------------"
     echo "available appleboot_rootfs volumes:"
     count=0

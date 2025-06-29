@@ -1,12 +1,12 @@
 #!/bin/sh +x
 
-SCRIPT_VERSION="1.1"
-SCRIPT_TYPE="beta" # can be stable, beta, test, PoC
+SCRIPT_VERSION="1.0"
+SCRIPT_TYPE="stable" # can be stable, beta, test, PoC
 NEWROOT_DIR="/newroot"
 
 TTY=0
 MINIOS_SHELL_RUN="/run/frecon/vt$TTY"
-APPLEBOOT_PARTITION=$1
+APPLEBOOT_VOLUME=$1
 
 main(){
     target=$1 # expected like /dev/sda2 or something
@@ -67,7 +67,6 @@ move_mounts() {
     done
 
     for mnt in $base_mounts; do
-        # $mnt is a full path (leading '/'), so no '/' joiner
         mkdir -p "$newroot_mnt$mnt"
         mount -vn -o move "$mnt" "${newroot_mnt}${mnt}"
     done
@@ -105,7 +104,6 @@ exec >"$MINIOS_SHELL_RUN" 2>&1
 
 # why is this not in the main.sh script?!?!?!? frecon is cleared when the hijack payload is called. this prompt should be on the screen.
 echo "appleboot switch_root payload!"
-echo "version v${SCRIPT_VERSION}. ${SCRIPT_TYPE} edition"
 echo "in process PID($$), (we should be PID1)"
 echo "sleeping for 2 sec..."
 sleep 2
@@ -115,7 +113,7 @@ sleep 2
 
 debug_kernel_settings
 detect_tty
-main "$APPLEBOOT_PARTITION" # $1 is the appleboot rootfs
+main "$APPLEBOOT_VOLUME" # $1 is the appleboot rootfs
 
 # how did we end up here?
 sleep infinity # will kernel panic if we dont sleep
