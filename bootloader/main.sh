@@ -1,6 +1,6 @@
 #!/bin/sh
 TEMPDIR=/temp
-SHIMBOOT_PART_NUM=4 # should be 2 in prod
+SHIMBOOT_PART_NUM=2 # should be 2 in prod
 
 # thanks stack overflow
 SCRIPT_PATH=$(readlink -f -- "$0")

@@ -1,7 +1,7 @@
 #!/bin/sh -x
 
-SCRIPT_VERSION="0.1"
-SCRIPT_TYPE="PoC" # can be stable, beta, test, PoC
+SCRIPT_VERSION="1.1"
+SCRIPT_TYPE="beta" # can be stable, beta, test, PoC
 NEWROOT_DIR="/newroot"
 
 TTY=0
