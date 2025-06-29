@@ -4,9 +4,12 @@ it is heavily built on the way that shimboot works, albeit with a lot of modific
 it also heavily relies on [BadApple](https://github.com/applefritter-inc/BadApple), which allowed for the code execution in miniOS.
 
 ## support
-this project supports all boards that are on disk layout v3, list here: \
+1. your board must be disk layout v3
+this project supports all boards that are on disk layout v3, list here:
+```
 nissa, skyrim, guybrush, corsola, rex, brya, brox, skywalker, rauru, cherry, geralt
-
+```
+2. your crOS version must be <v132, and if you have upgraded previously, you cannot downgrade anymore.
 you must not have upgraded to crOS v132, or else this would NOT work, because BadApple has been patched on that version.
 
 ## how to use
