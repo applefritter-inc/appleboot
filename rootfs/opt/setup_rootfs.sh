@@ -77,3 +77,5 @@ yes "$USER_PASS" | passwd $USERNAME
 
 # clean the apt caches
 apt-get clean
+
+exit 0
