@@ -2,7 +2,7 @@
 
 TEMPDIR=/temp
 APPLEBOOT_PART_NUM=2 # should be 2 in prod
-PARTLABEL_PREFIX="appleboot_rootfs:"
+PREFIX="appleboot_rootfs:"
 
 SCRIPT_PATH=$(readlink -f -- "$0")
 SCRIPT_DIR=$(dirname -- "$SCRIPT_PATH")
@@ -10,48 +10,32 @@ SCRIPT_DIR=$(dirname -- "$SCRIPT_PATH")
 mkdir -p "$TEMPDIR"
 cp "${SCRIPT_DIR}"/* "$TEMPDIR"
 
-# check for any appleboot_rootfs partitions
-found=0
-for link in /dev/disk/by-partlabel/${PARTLABEL_PREFIX}*; do
-    [ -e "$link" ] && found=1 && break
-done
-
 list_partitions() {
     echo "-------------------------------"
     echo "available appleboot_rootfs partitions:"
     count=0
-    for link in /dev/disk/by-partlabel/${PARTLABEL_PREFIX}*; do
-        [ -e "$link" ] || continue
-        count=$((count+1))
-        dev=$(readlink -f "$link")
-        label=${link##*/}
 
-        if command -v blockdev >/dev/null 2>&1; then
+    for udev_dir in by-partlabel by-label; do
+        for link in /dev/disk/$udev_dir/${PREFIX}*; do
+            [ -e "$link" ] || continue
+            count=$((count+1))
+            dev=$(readlink -f "$link")
+            label=${link##*/}
+
             bytes=$(blockdev --getsize64 "$dev")
-        else
-            base=$(basename "$dev")
-            if [ -r /sys/class/block/"$base"/size ]; then
-                sectors=$(cat /sys/class/block/"$base"/size)
-                bytes=$((sectors * 512))
+
+            if [ "$bytes" -ge $((1024**3)) ]; then
+                size="$((bytes / $((1024**3))))G"
+            elif [ "$bytes" -ge $((1024**2)) ]; then
+                size="$((bytes / $((1024**2))))M"
+            elif [ "$bytes" -ge 1024 ]; then
+                size="$((bytes / 1024))K"
             else
-                bytes=0
+                size="${bytes}B"
             fi
-        fi
 
-        if [ "$bytes" -ge $((1024*1024*1024)) ]; then
-            g=$((bytes / $((1024*1024*1024))))
-            size="${g}G"
-        elif [ "$bytes" -ge $((1024*1024)) ]; then
-            m=$((bytes / $((1024*1024))))
-            size="${m}M"
-        elif [ "$bytes" -ge 1024 ]; then
-            k=$((bytes / 1024))
-            size="${k}K"
-        else
-            size="${bytes}B"
-        fi
-
-        printf "%2d) %-12s %6s  %s\n" "$count" "$dev" "$size" "$label" # thank u chatgpt cuz miniOS has no column command :sob: <3
+            printf "%2d) %-12s %6s  %s\n" "$count" "$dev" "$size" "$label" # thank u chatgpt cuz miniOS has no column command :sob: <3
+        done
     done
 
     if [ $count -eq 0 ] 2>/dev/null; then
@@ -86,13 +70,15 @@ selection_loop(){
 
         i=0
         DISK=""
-        for link in /dev/disk/by-partlabel/${PARTLABEL_PREFIX}*; do
-            [ -e "$link" ] || continue
-            i=$((i+1))
-            if [ "$i" -eq "$sel" ] 2>/dev/null; then
-                DISK=$(readlink -f "$link")
-                break
-            fi
+        for udev_dir in by-partlabel by-label; do
+            for link in /dev/disk/$udev_dir/${PREFIX}*; do
+                [ -e "$link" ] || continue
+                i=$((i+1))
+                if [ "$i" -eq "$sel" ] 2>/dev/null; then
+                    DISK=$(readlink -f "$link")
+                    break 2
+                fi
+            done
         done
 
         if [ -z "$DISK" ]; then
