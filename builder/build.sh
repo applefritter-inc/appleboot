@@ -53,7 +53,10 @@ for mnt in $CHROOT_MOUNTS; do
 done
 
 echo "chrooting into our build directory and running the rootfs setup script..."
+set +e
 LC_ALL=C chroot $build_dir /bin/sh -c "$CHROOT_SETUP"
+echo "chroot exited with code $?"
+set -e
 
 echo "chroot setup script completed, unmounting bindmounts..."
 for mnt in $CHROOT_MOUNTS; do
