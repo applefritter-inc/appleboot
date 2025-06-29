@@ -81,8 +81,7 @@ copy_firmware() {
 
 echo "mounting recovery image"
 reco_loop=$(losetup -f --show -P "$reco_bin")
-mkdir -p reco_rootfs
-mkdir -p minios_rootfs
+mkdir -p reco_rootfs minios_rootfs
 mount -o ro "${reco_loop}p3" "reco_rootfs"
 
 echo "extracting miniOS kernel blob"
@@ -99,8 +98,8 @@ echo "downloading and copying firmware"
 copy_firmware $(basename $target_rootfs)
 
 echo "deleting/unmounting rootfses"
-rm -rf minios_rootfs
 umount reco_rootfs
+rm -rf reco_rootfs minios_rootfs
 losetup -d $reco_loop
 
 echo "completed patching rootfs"
