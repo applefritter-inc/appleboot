@@ -22,5 +22,5 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 10. the payload will automatically start, and debian will run.
 
 ## credits
-- appleflyer: finding BadApple, writing the scripts
-- vk6/ading2210: the [shimboot](https://github.com/ading2210/shimboot) project source code. appleboot is technically a "copyleft" of the shimboot project, and appleboot's source code has been partially written with the shimboot source.
+- [appleflyer](https://github.com/appleflyerv3): finding BadApple, writing the scripts
+- [vk6/ading2210](https://github.com/ading2210/): the [shimboot](https://github.com/ading2210/shimboot) project source code. appleboot is technically a "copyleft" of the shimboot project, and appleboot's source code has been partially written with the shimboot source.
