@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RECO_BIN=""
-# create shimboot image
+# create appleboot image
 BOARD="nissa"
 ROOTFS_DIR="rootfs-chroot"
 RECO_ZIP="reco.zip"
@@ -67,7 +67,7 @@ partition_disk() {
     echo x #enter expert mode
     echo n #change the partition name
     echo #accept default partition number
-    echo "shimboot_rootfs:$rootfs_name" #set partition name
+    echo "appleboot_rootfs:$rootfs_name" #set partition name
     echo r #return to normal more
 
     #write changes

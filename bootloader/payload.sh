@@ -6,7 +6,7 @@ NEWROOT_DIR="/newroot"
 
 TTY=0
 MINIOS_SHELL_RUN="/run/frecon/vt$TTY"
-SHIMBOOT_PARTITION=$1
+APPLEBOOT_PARTITION=$1
 
 main(){
     target=$1 # expected like /dev/sda2 or something
@@ -103,7 +103,7 @@ init_frecon
 exec >"$MINIOS_SHELL_RUN" 2>&1
 
 # why is this not in the main.sh script?!?!?!? frecon is cleared when the hijack payload is called. this prompt should be on the screen.
-echo "badapple-shimboot switch_root payload!"
+echo "appleboot switch_root payload!"
 echo "version v${SCRIPT_VERSION}. ${SCRIPT_TYPE} edition"
 echo "in process PID$$.(should be PID1)"
 echo "sleeping for 5 sec..."
@@ -114,7 +114,7 @@ sleep 5
 
 debug_kernel_settings
 detect_tty
-main "$SHIMBOOT_PARTITION" # $1 is the shimboot rootfs
+main "$APPLEBOOT_PARTITION" # $1 is the appleboot rootfs
 
 # how did we end up here?
 sleep infinity # will kernel panic if we dont sleep
