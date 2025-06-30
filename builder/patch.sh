@@ -77,16 +77,16 @@ extract_miniOS_initramfs(){
     local output_dir="$3"
 
     local kernel_file="$(basename $kernel_bin)"
-    local binwalk_out=$(binwalk --extract $kernel_bin --directory=$working_dir --run-as=root)
-    local stage1_file=$(echo $binwalk_out | pcregrep -o1 "\d+\s+0x([0-9A-F]+)\s+xz compressed data")
-    local stage1_dir="$working_dir/_$kernel_file.extracted"
+    local binwalk_out=$(./builder/binwalk-static-x86_64-linux --extract $kernel_bin --directory=$working_dir --run-as=root)
+    local stage1_file=$(echo "$binwalk_out" | awk '/XZ compressed data/ { sub(/^0x/,"",$2); print $2 }')
+    local stage1_dir="$working_dir/$kernel_file.extracted"
     local stage1_path="$stage1_dir/$stage1_file"
     
     #extract the initramfs cpio archive from the kernel image
-    binwalk --extract $stage1_path --directory=$stage1_dir --run-as=root > /dev/null
-    local stage2_dir="$stage1_dir/_$stage1_file.extracted/"
-    local cpio_file=$(file $stage2_dir/* | pcregrep -o1 "([0-9A-F]+):\s+ASCII cpio archive")
-    local cpio_path="$stage2_dir/$cpio_file"
+    local stage2_file=$(./builder/binwalk-static-x86_64-linux --extract "$stage1_path/decompressed.bin" --directory=$stage1_dir --run-as=root)
+    local stage2_dir="$stage1_dir/decompressed.bin.extracted/"
+    local cpio_file=$(echo "$stage2_file" | awk '/XZ compressed data/ { sub(/^0x/,"",$2); print $2 }')
+    local cpio_path="$stage2_dir/$cpio_file/decompressed.bin"
 
     rm -rf $output_dir
     mkdir $output_dir
@@ -133,7 +133,7 @@ echo "deleting/unmounting rootfses"
 sync
 sync
 umount reco_rootfs
-rm -rf reco_rootfs minios_rootfs
+rm -rf reco_rootfs
 losetup -d $reco_loop
 
 echo "completed patching rootfs"
