@@ -34,7 +34,7 @@ copy_modules_to_rootfs() {
             echo "$compressed_files" | xargs gunzip
             # busybox depmod has a bad implementation of depmod. chroot into target and depmod ourselves.
             # depmod -b "$target" "$(uname -r)"
-            chroot "$target" depmod "$(uname -r)"
+            chroot "$target" /usr/sbin/depmod "$(uname -r)"
         fi
     else
         echo "modules exist in rootfs, not copying modules..."
