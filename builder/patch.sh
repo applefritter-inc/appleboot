@@ -77,15 +77,15 @@ extract_miniOS_initramfs(){
     local output_dir="$3"
 
     local kernel_file="$(basename $kernel_bin)"
-    local binwalk_out=$(./builder/binwalk-static-x86_64-linux --extract $kernel_bin --directory=$working_dir --run-as=root)
+    local binwalk_out=$(./builder/binwalk-static-x86_64-linux --extract $kernel_bin --directory=$working_dir)
     local stage1_file=$(echo "$binwalk_out" | awk '/XZ compressed data/ { sub(/^0x/,"",$2); print $2 }')
     local stage1_dir="$working_dir/$kernel_file.extracted"
     local stage1_path="$stage1_dir/$stage1_file"
     
     #extract the initramfs cpio archive from the kernel image
-    local stage2_file=$(./builder/binwalk-static-x86_64-linux --extract "$stage1_path/decompressed.bin" --directory=$stage1_dir --run-as=root)
+    local stage2_file=$(./builder/binwalk-static-x86_64-linux --extract "$stage1_path/decompressed.bin" --directory=$stage1_dir)
     local stage2_dir="$stage1_dir/decompressed.bin.extracted/"
-    local cpio_file=$(echo "$stage2_file" | awk '/XZ compressed data/ { sub(/^0x/,"",$2); print $2 }')
+    local cpio_file=$(echo "$stage2_file" | awk '/XZ compressed data/ { sub(/^0x/,"",$2); print $2 }') # it's a cpio archive, no idea why it says xz compressed data?
     local cpio_path="$stage2_dir/$cpio_file/decompressed.bin"
 
     rm -rf $output_dir
