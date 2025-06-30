@@ -1,4 +1,6 @@
 #!/bin/bash
+set -Eeuo pipefail
+trap 'rc=$?; fatal_exit "unexpected error (exit code $rc) at line ${LINENO}: \`${BASH_COMMAND}\`!"' ERR
 
 RECO_BIN=""
 BOARD="nissa"
@@ -13,6 +15,12 @@ if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
     exit 1
 fi
+
+fatal_exit() {
+    echo "FATAL: $1"
+    echo "this is fatal, exiting..."
+    exit 1
+}
 
 check_dependencies() {
     local dep_array=$1
@@ -107,6 +115,10 @@ create_image() {
     partition_disk $image_path $bootloader_size $rootfs_name
 }
 
+echo "welcome to the appleboot image builder!"
+echo "if the script fails, the script will immediately exit at that point. if you do not see that appleboot has finished building, something went wrong with the builder!"
+echo "please report the issue on github"
+
 # make our debian rootfs
 ./builder/build.sh "$ROOTFS_DIR"
 
@@ -152,9 +164,9 @@ rm -r rootfs_mnt
 # finally, detach the image from the loop device YAY
 losetup -d $appleboot_loop
 
-echo "appleboot has finished building! the image should be at $(pwd)/$APPLEBOOT_IMAGE"
-
 if [ -n "$DELETE_ROOTFS_CHROOT" ]; then
     echo "cleaning up rootfs-chroot..."
     rm -rf rootfs-chroot
 fi
+
+echo "appleboot has finished building! the image should be at $(pwd)/$APPLEBOOT_IMAGE. successful build."

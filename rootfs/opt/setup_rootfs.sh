@@ -1,5 +1,13 @@
 #!/bin/bash
-set -euo pipefail
+set -Eeuo pipefail
+trap 'rc=$?; fatal_exit "unexpected error (exit code $rc) at line ${LINENO}: \`${BASH_COMMAND}\`!"' ERR
+
+fatal_exit() {
+    echo "FATAL: $1"
+    echo "this is fatal, exiting..."
+    exit 1
+}
+
 # the whole thing was basically stolen from shimboot
 
 HOSTNAME="appleboot"

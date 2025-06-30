@@ -1,7 +1,33 @@
 #!/bin/bash
 # 70-80% from shimboot code lol
 # with the ROOT-A & miniOS-A partitions, patch the existing debian rootfs install.
-set -euo pipefail
+set -Eeuo pipefail
+trap 'rc=$?; fatal_exit "unexpected error (exit code $rc) at line ${LINENO}: \`${BASH_COMMAND}\`!"' ERR
+
+cleanup() {
+    if mountpoint -q reco_rootfs; then
+        echo "unmounting reco_rootfs"
+        umount reco_rootfs || echo "warning: failed to unmount reco_rootfs!!!"
+    fi
+
+    if [ -n "${reco_loop:-}" ]; then
+        if losetup -j "$reco_bin" | grep -qF "$reco_loop"; then
+            echo "detaching loop device $reco_loop"
+            losetup -d "$reco_loop" || echo "warning: failed to detach $reco_loop!!"
+        fi
+    fi
+
+    echo "cleaning up temp dirs"
+    rm -rf reco_rootfs minios_rootfs minios_extract
+}
+
+fatal_exit() {
+    echo "FATAL: $1"
+    echo "this is fatal! errors here are VERY messy. attempting to clean up."
+    cleanup
+    echo "finished cleaning up, exiting on a fatal exit."
+    exit 1
+}
 
 if [ "$EUID" -ne 0 ]; then
     echo "the patcher is not running as root!! please ensure you run this as root/sudo."

@@ -1,6 +1,13 @@
 #!/bin/bash
 # build debian rootfs for appleboot
-set -euo pipefail
+set -Eeuo pipefail
+trap 'rc=$?; fatal_exit "unexpected error (exit code $rc) at line ${LINENO}: \`${BASH_COMMAND}\`!"' ERR
+
+fatal_exit() {
+    echo "FATAL: $1"
+    echo "this is fatal, exiting..."
+    exit 1
+}
 
 ARCH="amd64"
 COMPONENTS="main,contrib,non-free,non-free-firmware"
@@ -12,12 +19,6 @@ if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
     exit 1
 fi
-
-fatal_exit() {
-    echo "FATAL: $1"
-    echo "this is fatal, exiting..."
-    exit 1
-}
 
 build_dir=$(realpath -m $1)
 mkdir -p $build_dir
