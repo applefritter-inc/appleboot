@@ -7,11 +7,29 @@ ROOTFS_DIR="rootfs-chroot"
 RECO_ZIP="reco.zip"
 APPLEBOOT_IMAGE="appleboot-${BOARD}.bin"
 DELETE_ROOTFS_CHROOT="y"
+DEPENDENCIES="cpio binwalk pcregrep realpath cgpt mkfs.ext4 fdisk debootstrap findmnt wget git gunzip depmod"
 
 if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
     exit 1
 fi
+
+check_dependencies() {
+    local dep_array=$1
+    local missing=()
+    for cmd in $dep_array; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+        missing+=("$cmd")
+        fi
+    done
+
+    if [ ${#missing[@]} -ne 0 ]; then
+        echo "missing dependencies: ${missing[*]}"
+        exit 1
+    fi
+}
+
+check_dependencies "$DEPENDENCIES"
 
 get_reco_url() {
     local board=$1
