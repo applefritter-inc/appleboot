@@ -31,11 +31,9 @@ main(){
     done
 
     move_mounts "$NEWROOT_DIR"
-    echo "mounts moved! switching root. waiting 2 seconds to do so..."
+    echo "Mounts moved! Switching root to the new rootfs with switch_root."
+    echo "Sleeping for 2 seconds..."
     sleep 2
-
-    echo "switching to new root with switch_root in 2 seconds... tty1: ${MINIOS_SHELL_RUN}"
-    sleep 1
 
     if [ ! -L "${NEWROOT_DIR}/sbin/init" ]; then # this checks if the /sbin/init symlink exists, not its target. since we aren't in the nrw root filesystem yet, it's target will point to nothing.
         # we cannot recover from this point, it is very difficult for the end user to recover from here. instead, we shall drop to rescue mode.
@@ -52,7 +50,7 @@ main(){
         switch_root_cmd=$switch_root_cmd_rescue
         
         printf "\n"
-        echo "entering rescue mode..."
+        echo "Entering rescue mode..."
         echo "tip: once you're done, you can run 'exec /sbin/init' to continue booting into the system! (we are in the appleboot rootfs)"
         printf "\n"
 
@@ -141,9 +139,9 @@ exec >"$MINIOS_SHELL_RUN" 2>&1
 bind_frecon_pts
 
 # why is this not in the main.sh script?!?!?!? frecon is cleared when the hijack payload is called. this prompt should be on the screen.
-echo "appleboot switch_root payload!"
-echo "in process PID($$), (we should be PID1)"
-echo "sleeping for 2 sec..."
+echo "Welcome to the appleboot switch_root payload!"
+echo "In process PID($$), (we should be PID1)."
+echo "Sleeping for 2 seconds..."
 printf "\n"
 sleep 2
 

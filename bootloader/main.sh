@@ -103,7 +103,7 @@ clear
 list_partitions
 selection_loop
 
-echo "selected appleboot_rootfs partition: $DISK"
+echo "Selected appleboot_rootfs partition: $DISK"
 
 # hand off to init.sh
 exec "${TEMPDIR}/init.sh" "$SCRIPT_DIR" "$TEMPDIR" "$DISK"
