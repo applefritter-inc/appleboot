@@ -13,11 +13,13 @@ mkdir -p "$TEMPDIR"
 cp "${SCRIPT_DIR}"/* "$TEMPDIR"
 
 list_partitions() {
+
     echo "-------------------------------"
     echo "welcome to appleboot!"
     echo "version v${SCRIPT_VERSION}. ${SCRIPT_TYPE} edition"
     echo "-------------------------------"
     echo "available appleboot_rootfs volumes:"
+
     count=0
 
     for udev_dir in by-partlabel by-label; do
@@ -66,7 +68,7 @@ selection_loop(){
             if [ ! -b "$DISK" ]; then
                 clear
                 echo "error: $DISK is not a valid disk!" >&2
-                echo
+                printf "\n"
                 list_partitions
                 continue
             fi
@@ -89,7 +91,7 @@ selection_loop(){
         if [ -z "$DISK" ]; then
             clear
             echo "you selected an invalid option! please try again." >&2
-            echo
+            printf "\n"
             list_partitions
             continue
         fi

@@ -19,11 +19,25 @@ open_shell() { # this means that something went very wrong, probably because the
     exec /bin/sh < "$tty" >> "$tty" 2>&1
 }
 
+copy_modules_to_rootfs() {
+    local target=$1 # the root directory of the newroot location
+
+    if [ ! -d "${target}/lib/modules/$(uname -r)" ]; then
+        echo "modules not in the rootfs!! auto-copying modules to rootfs."
+        mkdir -p "${target}/lib/modules/$(uname -r)"
+        cp -a "/lib/modules/$(uname -r)/." "${target}/lib/modules/$(uname -r)"
+    else
+        echo "modules exist in rootfs, not copying modules..."
+    fi
+}
+
 main(){
     rescue_enabled=0 # temp, until i find a way to activate rescue mode
     target=$1 # expected like /dev/sda2 or something
     mkdir -p "$NEWROOT_DIR"
     mount -v "$target" "$NEWROOT_DIR"
+
+    copy_modules_to_rootfs "$NEWROOT_DIR"
 
     # unload kernel modules before moving mounts, or else lsmod will fail due to /proc/modules not existing...
     for m in $(lsmod | awk 'NR>1 {print $1}' | tac); do
@@ -31,8 +45,8 @@ main(){
     done
 
     move_mounts "$NEWROOT_DIR"
-    echo "Mounts moved! Switching root to the new rootfs with switch_root."
-    echo "Sleeping for 2 seconds..."
+    echo "mounts moved! switching root to the new rootfs with switch_root."
+    echo "sleeping for 2 seconds..."
     sleep 2
 
     if [ ! -L "${NEWROOT_DIR}/sbin/init" ]; then # this checks if the /sbin/init symlink exists, not its target. since we aren't in the nrw root filesystem yet, it's target will point to nothing.
@@ -50,7 +64,7 @@ main(){
         switch_root_cmd=$switch_root_cmd_rescue
         
         printf "\n"
-        echo "Entering rescue mode..."
+        echo "entering rescue mode..."
         echo "tip: once you're done, you can run 'exec /sbin/init' to continue booting into the system! (we are in the appleboot rootfs)"
         printf "\n"
 
@@ -71,8 +85,8 @@ debug_kernel_settings() {
 }
 
 move_mounts() {
-    local base_mounts="/sys /proc /dev /run"
-    local unmount_devices="/tmp"
+    local base_mounts="/sys /proc /dev"
+    local unmount_devices="/tmp /run"
     local newroot_mnt="$1"
 
     for umnt in $unmount_devices; do
@@ -138,9 +152,9 @@ exec >"$MINIOS_SHELL_RUN" 2>&1
 bind_frecon_pts
 
 # why is this not in the main.sh script?!?!?!? frecon is cleared when the hijack payload is called. this prompt should be on the screen.
-echo "Welcome to the appleboot switch_root payload!"
-echo "In process PID($$), (we should be PID1)."
-echo "Sleeping for 2 seconds..."
+echo "welcome to the appleboot switch_root payload!"
+echo "in process PID($$), (we should be PID1)."
+echo "sleeping for 2 seconds..."
 printf "\n"
 sleep 2
 

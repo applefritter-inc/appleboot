@@ -8,8 +8,8 @@ BOARD="nissa"
 ROOTFS_DIR="rootfs-chroot"
 RECO_ZIP="reco.zip"
 APPLEBOOT_IMAGE="appleboot-${BOARD}.bin"
-DELETE_ROOTFS_CHROOT="y"
-DEPENDENCIES="cpio binwalk pcregrep realpath cgpt mkfs.ext4 fdisk debootstrap findmnt wget git gunzip depmod"
+DELETE_ESSENTIAL="y"
+DEPENDENCIES="cpio pcregrep realpath cgpt mkfs.ext4 fdisk debootstrap findmnt wget git gunzip depmod"
 
 if [ "$EUID" -ne 0 ]; then
     echo "the builder is not running as root!! please ensure you run this as root/sudo."
@@ -164,9 +164,10 @@ rm -r rootfs_mnt
 # finally, detach the image from the loop device YAY
 losetup -d $appleboot_loop
 
-if [ -n "$DELETE_ROOTFS_CHROOT" ]; then
-    echo "cleaning up rootfs-chroot..."
+if [ -n "$DELETE_ESSENTIAL" ]; then
+    echo "cleaning up rootfs-chroot & the reco bin file..."
     rm -rf rootfs-chroot
+    rm -rf $RECO_BIN
 fi
 
 echo "appleboot has finished building! the image should be at $(pwd)/$APPLEBOOT_IMAGE. successful build."

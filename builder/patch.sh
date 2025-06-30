@@ -18,7 +18,7 @@ cleanup() {
     fi
 
     echo "cleaning up temp dirs"
-    rm -rf reco_rootfs minios_rootfs minios_extract
+    rm -rf reco_rootfs
 }
 
 fatal_exit() {
@@ -37,22 +37,24 @@ fi
 target_rootfs=$(realpath $1)
 reco_bin=$(realpath $2)
 
-copy_modules(){
+copy_libs(){
     local rootfs_dir=$1 # our debian install
-    local minios_dir=$2 # miniOS initramfs. we will be the ones deleting this directory
-    local reco_dir=$3 # ROOT-A rootfs.
+    # local minios_dir=$2 # miniOS initramfs. we will be the ones deleting this directory
+    local reco_dir=$2 # ROOT-A rootfs.
 
     # modules
     rm -rf "${rootfs_dir}/lib/modules"
     mkdir -p "${rootfs_dir}/lib/modules"
-    cp -a "${minios_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
+    # we do not load the miniOS modules here, because we don't know what miniOS version the user is on, which will cause the kernel modules to change too. kernel modules are strictly tied to that specific kernel build. instead, we autodetect in the bootloader, and copy over modules.
+    #cp -a "${minios_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
     # we do not use the recovery image modules here, because they are of a different kernel!
     #cp -a "${reco_dir}/lib/modules/." "${rootfs_dir}/lib/modules/"
 
     # firmware
     rm -rf "${rootfs_dir}/lib/firmware"
     mkdir -p "${rootfs_dir}/lib/firmware"
-    cp -a --remove-destination "${minios_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
+    # since we removed our miniOS dependency, we will remove miniOS firmware copying here.
+    #cp -a --remove-destination "${minios_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
     cp -a --remove-destination "${reco_dir}/lib/firmware/." "${rootfs_dir}/lib/firmware/"
 
     # modprobe configs
@@ -69,28 +71,6 @@ copy_modules(){
             depmod -b "$rootfs_dir" "$version"
         done
     fi
-}
-
-extract_miniOS_initramfs(){
-    local kernel_bin="$1"
-    local working_dir="$2"
-    local output_dir="$3"
-
-    local kernel_file="$(basename $kernel_bin)"
-    local binwalk_out=$(./builder/binwalk-static-x86_64-linux --extract $kernel_bin --directory=$working_dir)
-    local stage1_file=$(echo "$binwalk_out" | awk '/XZ compressed data/ { sub(/^0x/,"",$2); print $2 }')
-    local stage1_dir="$working_dir/$kernel_file.extracted"
-    local stage1_path="$stage1_dir/$stage1_file"
-    
-    #extract the initramfs cpio archive from the kernel image
-    local stage2_file=$(./builder/binwalk-static-x86_64-linux --extract "$stage1_path/decompressed.bin" --directory=$stage1_dir)
-    local stage2_dir="$stage1_dir/decompressed.bin.extracted/"
-    local cpio_file=$(echo "$stage2_file" | awk '/XZ compressed data/ { sub(/^0x/,"",$2); print $2 }') # it's a cpio archive, no idea why it says xz compressed data?
-    local cpio_path="$stage2_dir/$cpio_file/decompressed.bin"
-
-    rm -rf $output_dir
-    mkdir $output_dir
-    cpio -idmv -D "$output_dir" < "$cpio_path"
 }
 
 download_firmware() {
@@ -111,20 +91,22 @@ copy_firmware() {
     cp -r --remove-destination "${firmware_path}/"* "${target_rootfs}/lib/firmware/"
 }
 
+echo "patching rootfs with needed kernel drivers and firmware" 
+
 echo "mounting recovery image"
 reco_loop=$(losetup -f --show -P "$reco_bin")
-mkdir -p reco_rootfs minios_rootfs
+mkdir -p reco_rootfs
 mount -o ro "${reco_loop}p3" "reco_rootfs"
 
-echo "extracting miniOS kernel blob"
-dd if="${reco_loop}p9" of=minios_kernel.blob bs=512 status=progress
+# echo "extracting miniOS kernel blob"
+# dd if="${reco_loop}p9" of=minios_kernel.blob bs=512 status=progress
 
-echo "extracting miniOS initramfs"
-extract_miniOS_initramfs "minios_kernel.blob" "minios_extract" "minios_rootfs"
-rm -rf minios_extract minios_kernel.blob
+# echo "extracting miniOS initramfs"
+# extract_miniOS_initramfs "minios_kernel.blob" "minios_extract" "minios_rootfs"
+# rm -rf minios_extract minios_kernel.blob
 
-echo "copying modules"
-copy_modules $(basename $target_rootfs) "minios_rootfs" "reco_rootfs"
+echo "copying libraries"
+copy_libs $(basename $target_rootfs) "reco_rootfs"
 
 echo "downloading and copying firmware"
 copy_firmware $(basename $target_rootfs)
