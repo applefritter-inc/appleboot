@@ -3,21 +3,27 @@
 SCRIPT_VERSION="1.0"
 SCRIPT_TYPE="stable" # can be stable, beta, test, PoC
 NEWROOT_DIR="/newroot"
+RESCUE_SHELL="/bin/bash"
 
 TTY=0
-MINIOS_SHELL_RUN="/run/frecon/vt$TTY"
+MINIOS_SHELL_RUN="/dev/pts/$TTY"
 APPLEBOOT_VOLUME=$1
 
+open_shell() { # this means that something went very wrong, probably because the root disk is broken. this should only happen if the user manually selects a root disk, and the root disk didnt have a rootfs.
+    local tty=$1
+    # enable input & cursor
+    printf "\033[?25h" > "$tty"
+    printf "\033]input:on\a" > "$tty"
+
+    # enable the shell
+    exec /bin/sh < "$tty" >> "$tty" 2>&1
+}
+
 main(){
+    rescue_enabled=0 # temp, until i find a way to activate rescue mode
     target=$1 # expected like /dev/sda2 or something
     mkdir -p "$NEWROOT_DIR"
     mount -v "$target" "$NEWROOT_DIR"
-
-    if [ -f "/bin/frecon-lite" ]; then 
-        rm -f /dev/console
-        touch /dev/console # this has to be a regular file otherwise the system crashes afterwards
-        mount -o bind "$TTY1" /dev/console
-    fi
 
     # unload kernel modules before moving mounts, or else lsmod will fail due to /proc/modules not existing...
     for m in $(lsmod | awk 'NR>1 {print $1}' | tac); do
@@ -28,17 +34,37 @@ main(){
     echo "mounts moved! switching root. waiting 2 seconds to do so..."
     sleep 2
 
-    mount --make-rprivate /
-    mkdir -p "${NEWROOT_DIR}/bootloader"
-
     echo "switching to new root with switch_root in 2 seconds... tty1: ${MINIOS_SHELL_RUN}"
     sleep 1
 
-    # /dev/ttyS0,115200 for debugging with SuzyQ on a dev miniOS image.
-    exec switch_root "$NEWROOT_DIR" /sbin/init -c /dev/ttyS0,115200 || {
+    if [ ! -L "${NEWROOT_DIR}/sbin/init" ]; then # this checks if the /sbin/init symlink exists, not its target. since we aren't in the nrw root filesystem yet, it's target will point to nothing.
+        # we cannot recover from this point, it is very difficult for the end user to recover from here. instead, we shall drop to rescue mode.
+        echo "/sbin/init does not exist on the newroot! dropping to a shell...(we are still in miniOS)"
+        open_shell /console/vt0
+    fi
+
+    # /dev/ttyS0 for debugging with SuzyQ on a dev miniOS image.
+    switch_root_cmd="switch_root -c /dev/ttyS0 $NEWROOT_DIR /sbin/init"
+    switch_root_cmd_rescue="switch_root -c /dev/console $NEWROOT_DIR $RESCUE_SHELL -i"
+
+    # TODO(appleflyer): find a way for us to activate rescue mode
+    if [ "$rescue_enabled" -ne 0 ]; then
+        switch_root_cmd=$switch_root_cmd_rescue
+        
+        printf "\n"
+        echo "entering rescue mode..."
+        echo "tip: once you're done, you can run 'exec /sbin/init' to continue booting into the system! (we are in the appleboot rootfs)"
+        printf "\n"
+
+        # enable input
+        printf "\033[?25h" > "/console/vt0"
+        printf "\033]input:on\a" > "/console/vt0"
+    fi
+
+    exec $switch_root_cmd || {
         # doesnt work yet
-        echo "switch_root failed ($?). dropping to shell..."
-        exec /bin/sh
+        echo "switch_root failed ($?). dropping to shell...(we are still in miniOS)"
+        open_shell /console/vt0
     }
 }
 
@@ -47,19 +73,9 @@ debug_kernel_settings() {
     echo 0 > /proc/sys/kernel/panic # infinite panic wait, do not reboot the chromebook
 }
 
-detect_tty() {
-    if [ -f "/bin/frecon-lite" ]; then
-        export TTY1="/run/frecon/vt0"
-        export TTY2="/run/frecon/vt1"
-    else
-        export TTY1="/dev/tty1"
-        export TTY2="/dev/tty2"
-    fi
-}
-
 move_mounts() {
-    local base_mounts="/sys /proc /dev"
-    local unmount_devices="/tmp /run"
+    local base_mounts="/sys /proc /dev /run"
+    local unmount_devices="/tmp"
     local newroot_mnt="$1"
 
     for umnt in $unmount_devices; do
@@ -72,20 +88,38 @@ move_mounts() {
     done
 }
 
-exec_init() {
-    echo "tty1: ${TTY1}"
-    echo "exec'ing init"
-    exec /sbin/init < "$TTY1" >> "$TTY1" 2>&1
-}
-
 init_frecon(){
+    # this is to ensure that vt1 doesnt end up on /dev/pts/0
+    umount /dev/pts
+    mount -t devpts devpts /dev/pts -o rw,relatime,newinstance,nosuid,noexec,relatime,mode=600,ptmxmode=000
+
+    # now, we actually setup frecon
     local resolution="$(/bin/frecon-lite --print-resolution)"
     local x_res="${resolution% *}"
     [ "${x_res}" -ge 1920 ] && scale=0 || scale=1
 
-    /bin/frecon-lite --enable-vt1 --daemon --no-login --enable-gfx --enable-vts --scale="$scale" --clear "0x0" --pre-create-vts
+    /bin/frecon-lite --enable-vt1 --enable-vts --daemon --no-login --enable-osc --scale="$scale" --clear "0x0" --pre-create-vts
     sleep 2
     printf "\033]switchvt:$TTY\a" > /run/frecon/current
+}
+
+bind_frecon_pts(){
+    if [ -f "/bin/frecon-lite" ]; then 
+        # this is for our newroot to make /dev/console work
+        rm -f /dev/console
+        touch /dev/console # this has to be a regular file otherwise the system crashes afterwards
+        mount -o bind $MINIOS_SHELL_RUN /dev/console
+
+        # allows us to open a debug shell while booting!
+        # bind mount /dev/pts/0 -> /console/vt0 and so on
+        rm -f /console
+        mkdir -p /console
+        local vts="0 1 2 3"
+        for vt in $vts; do
+            touch /console/vt$vt
+            mount -o bind /dev/pts/$vt /console/vt$vt
+        done
+    fi
 }
 
 disable_processes(){
@@ -94,25 +128,29 @@ disable_processes(){
     kill -TERM -1
     sleep 1
     kill -KILL -1
+    sleep 1 # wait a bit
 }
 
+stty -F /dev/ttyS0 115200 # set the baud rate, for some reason 115200 is not set by default
 disable_processes
 init_frecon
 
-# activate AFTER initing frecon!
+# activate AFTER initing frecon, we want as much logging as possible.
 exec >"$MINIOS_SHELL_RUN" 2>&1
+
+bind_frecon_pts
 
 # why is this not in the main.sh script?!?!?!? frecon is cleared when the hijack payload is called. this prompt should be on the screen.
 echo "appleboot switch_root payload!"
 echo "in process PID($$), (we should be PID1)"
 echo "sleeping for 2 sec..."
+printf "\n"
 sleep 2
 
 # output kernel logs
 #cat /dev/kmsg > "$MINIOS_SHELL_RUN" 2>&1 &
 
 debug_kernel_settings
-detect_tty
 main "$APPLEBOOT_VOLUME" # $1 is the appleboot rootfs
 
 # how did we end up here?
