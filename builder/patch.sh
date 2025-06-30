@@ -61,16 +61,7 @@ copy_libs(){
     mkdir -p "${rootfs_dir}/lib/modprobe.d" "${rootfs_dir}/etc/modprobe.d"
     cp -a "${reco_dir}/lib/modprobe.d/." "${rootfs_dir}/lib/modprobe.d/"
     cp -a "${reco_dir}/etc/modprobe.d/." "${rootfs_dir}/etc/modprobe.d/"
-
-    #decompress kernel modules if necessary - debian won't recognize these otherwise
-    local compressed_files="$(find "${rootfs_dir}/lib/modules" -name '*.gz')"
-    if [ "$compressed_files" ]; then
-        echo "$compressed_files" | xargs gunzip
-        for kernel_dir in "$rootfs_dir/lib/modules/"*; do
-            local version="$(basename "$kernel_dir")"
-            depmod -b "$rootfs_dir" "$version"
-        done
-    fi
+    
 }
 
 download_firmware() {

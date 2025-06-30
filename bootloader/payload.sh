@@ -26,6 +26,16 @@ copy_modules_to_rootfs() {
         echo "modules not in the rootfs!! auto-copying modules to rootfs."
         mkdir -p "${target}/lib/modules/$(uname -r)"
         cp -a "/lib/modules/$(uname -r)/." "${target}/lib/modules/$(uname -r)"
+
+        # from shimboot
+        #decompress kernel modules if necessary - debian won't recognize these otherwise
+        local compressed_files="$(find "${target}/lib/modules/$(uname -r)" -name '*.gz')"
+        if [ "$compressed_files" ]; then
+            echo "$compressed_files" | xargs gunzip
+            # busybox depmod has a bad implementation of depmod. chroot into target and depmod ourselves.
+            # depmod -b "$target" "$(uname -r)"
+            chroot "$target" depmod "$(uname -r)"
+        fi
     else
         echo "modules exist in rootfs, not copying modules..."
     fi
