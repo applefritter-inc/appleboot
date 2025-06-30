@@ -91,7 +91,7 @@ move_mounts() {
 init_frecon(){
     # this is to ensure that vt1 doesnt end up on /dev/pts/0
     umount /dev/pts
-    mount -t devpts devpts /dev/pts -o rw,relatime,newinstance,nosuid,noexec,relatime,mode=600,ptmxmode=000
+    mount -t devpts devpts /dev/pts -o rw,newinstance,nosuid,noexec,relatime,mode=600,ptmxmode=000
 
     # now, we actually setup frecon
     local resolution="$(/bin/frecon-lite --print-resolution)"
