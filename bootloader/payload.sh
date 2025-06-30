@@ -60,7 +60,6 @@ main(){
     fi
 
     exec $switch_root_cmd || {
-        # doesnt work yet
         echo "switch_root failed ($?). dropping to shell...(we are still in miniOS)"
         open_shell /console/vt0
     }
@@ -68,7 +67,7 @@ main(){
 
 debug_kernel_settings() {
     echo "8 4 1 8" > /proc/sys/kernel/printk
-    echo 0 > /proc/sys/kernel/panic # infinite panic wait, do not reboot the chromebook
+    echo 0 > /proc/sys/kernel/panic # infinite panic wait, do not reboot the chromebook, in the event of a panic
 }
 
 move_mounts() {
@@ -144,9 +143,6 @@ echo "In process PID($$), (we should be PID1)."
 echo "Sleeping for 2 seconds..."
 printf "\n"
 sleep 2
-
-# output kernel logs
-#cat /dev/kmsg > "$MINIOS_SHELL_RUN" 2>&1 &
 
 debug_kernel_settings
 main "$APPLEBOOT_VOLUME" # $1 is the appleboot rootfs
