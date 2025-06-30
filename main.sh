@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 trap 'rc=$?; fatal_exit "unexpected error (exit code $rc) at line ${LINENO}: \`${BASH_COMMAND}\`!"' ERR
 
-RECO_BIN="cros.bin"
+RECO_BIN=""
 BOARD="nissa"
 # create appleboot image
 ROOTFS_DIR="rootfs-chroot"
