@@ -55,7 +55,7 @@ done
 
 echo "chrooting into our build directory and running the rootfs setup script..."
 set +e
-LC_ALL=C chroot $build_dir /bin/sh -c "$CHROOT_SETUP"
+LC_ALL=C chroot $build_dir /bin/sh -c "$CHROOT_SETUP $DEBIAN_RELEASE"
 echo "chroot exited with code $?"
 set -e
 

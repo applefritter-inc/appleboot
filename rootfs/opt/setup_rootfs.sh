@@ -13,7 +13,7 @@ fatal_exit() {
 HOSTNAME="appleboot"
 PACKAGES="task-xfce-desktop dbus-x11"
 ESSENTIAL_PACKAGES="cloud-utils zram-tools sudo command-not-found bash-completion libfuse2 libfuse3-*"
-DEBIAN_RELEASE="bookworm"
+DEBIAN_RELEASE=${1:-bookworm}
 USERNAME="user"
 ROOT_PASS="root"
 USER_PASS="user"
