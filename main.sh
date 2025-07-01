@@ -149,7 +149,7 @@ mkfs.ext4 "${appleboot_loop}p2" # rootfs
 echo "shifting bootloader files..."
 mkdir -p bootloader_mnt
 mount "${appleboot_loop}p1" "bootloader_mnt"
-cp -arv bootloader/* "bootloader_mnt"
+cp -rv --no-preserve=ownership,mode bootloader/* bootloader_mnt/
 umount "${appleboot_loop}p1"
 rm -r bootloader_mnt
 
