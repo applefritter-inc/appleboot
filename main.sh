@@ -87,7 +87,7 @@ partition_disk() {
     # change the partition type, if not it will stay as 'linux filesystem'
     echo t #change type
     #echo 1 since this is the only partition as of now, partition 1 is auto selected
-    echo 1 #type 1, which is W95 FAT32
+    echo 0700 # for microsoft basic data partition
 
     #create rootfs partition
     echo n #new partition
@@ -146,7 +146,7 @@ appleboot_loop=$(losetup -f --show -P "$APPLEBOOT_IMAGE")
 sgdisk -e "$appleboot_loop"
 
 # partition disks
-mkfs.vfat -F 32 -n BOOTLOADER "${appleboot_loop}p1"  # bootloader
+mkfs.vfat -F 16 -n BOOTLOADER "${appleboot_loop}p1" # bootloader
 mkfs.ext4 "${appleboot_loop}p2" # rootfs
 
 # shift bootloader files into bootloader partition
