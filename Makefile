@@ -5,7 +5,7 @@ BUILDER := main.sh
 
 require-root:
 	@ [ "$$(id -u)" -eq 0 ] || { \
-	    echo "error: this makefile must be run as root!!"; \
+	    echo "error: this rule must be run as root!!"; \
 	    $(MAKE) help; \
 	    exit 1; \
 	}
