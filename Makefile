@@ -10,7 +10,7 @@ all: run
 
 run: $(BUILDER)
 ifeq ($(strip $(BOARD)),)
-$(error BOARD is required. usage:: sudo make run BOARD=<board>)
+$(error BOARD is required. usage: sudo make run BOARD=<board>)
 endif
 	@echo "running builder with board ${BOARD}..."
 	@bash $(BUILDER) "$(BOARD)"
