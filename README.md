@@ -34,7 +34,7 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 ## developer information
 
 ### how to build
-*ensure you have at least 20gib free space*
+*ensure you have at least 20gib free space on your build machine*
 
 1. install the dependencies, which are: `cpio realpath mkfs.ext4 fdisk debootstrap findmnt wget git make`
 2. clone the repository and enter it with
