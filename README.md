@@ -39,6 +39,6 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 1. install the dependencies, which are: `cpio realpath mkfs.ext4 fdisk debootstrap findmnt wget git make`
 2. clone the repository and enter it with
 ```sh
-git clone https://github.com/applefritter-inc/ && sudo make all
+git clone https://github.com/applefritter-inc/ && sudo make BOARD=<board>
 ```
 3. once it's done, the image should appear as `appleboot-*.bin`, e.g. `appleboot-nissa.bin`
