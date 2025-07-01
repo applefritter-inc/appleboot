@@ -30,11 +30,11 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 ## rescue mode
 somehow, if you messed something up on your root system, appleboot offers a rescue mode.
 1. enter the appleboot bootloader, which is steps 1-9 in the [how to use](#how-to-use) section.
-2. select the option "r".
+2. select the option "r" to toggle rescue mode.
 3. select your rootfs volume to enter rescue mode on that volume.
 4. you will be given a bash shell after mounts are set up.
 
-when you enable rescue mode, the "rescue mode:" line in the bootloader will change from 0 to 1. \
+when you toggle rescue mode, the "rescue mode:" line in the bootloader will change from 0 to 1, and vice versa if it was toggled on. \
 below demonstrates the bootloader when you enable rescue mode.
 
 ```
