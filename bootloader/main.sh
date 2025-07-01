@@ -53,16 +53,16 @@ list_partitions() {
 selection_loop(){
     while :; do
         echo "-------------------------------"
-        echo "(-1 to exit, 0 to manually specify a root disk)"
+        echo "(q to exit, m to manually specify a root disk)"
         printf "enter selection: "
         read sel
 
-        if [ "$sel" -eq -1 ] 2>/dev/null; then
+        if [ "$sel" -eq "q" ] 2>/dev/null; then
             echo "exiting by user's choice..."
             exit 0
         fi
 
-        if [ "$sel" -eq 0 ] 2>/dev/null; then
+        if [ "$sel" -eq "m" ] 2>/dev/null; then
             printf "enter your desired root disk (e.g. /dev/sda2): "
             read DISK
             if [ ! -b "$DISK" ]; then

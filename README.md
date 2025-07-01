@@ -30,3 +30,15 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 ## credits
 - [appleflyer](https://github.com/appleflyerv3): finding [BadApple](https://github.com/applefritter-inc/BadApple), writing the scripts
 - [vk6/ading2210](https://github.com/ading2210/): the [shimboot](https://github.com/ading2210/shimboot) project source code. appleboot is technically a "copyleft" of the shimboot project, and appleboot's source code has been partially written with the shimboot source.
+
+## developer information
+
+### how to build
+*ensure you have at least 20gib free space*
+
+1. install the dependencies, which are: `cpio realpath mkfs.ext4 fdisk debootstrap findmnt wget git make`
+2. clone the repository and enter it with
+```sh
+git clone https://github.com/applefritter-inc/ && sudo make all
+```
+3. once it's done, the image should appear as `appleboot-*.bin`, e.g. `appleboot-nissa.bin`
