@@ -84,6 +84,10 @@ partition_disk() {
     echo #accept default parition number
     echo #accept default first sector
     echo "+${bootloader_size}M" #partition size is 1M
+    # change the partition type, if not it will stay as 'linux filesystem'
+    echo t #change type
+    echo 1 #partition 1
+    echo 1 #type 1, which is W95 FAT32
 
     #create rootfs partition
     echo n #new partition

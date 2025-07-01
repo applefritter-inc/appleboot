@@ -8,15 +8,16 @@ PREFIX="appleboot_rootfs:"
 
 SCRIPT_PATH=$(readlink -f -- "$0")
 SCRIPT_DIR=$(dirname -- "$SCRIPT_PATH")
+rescue_status=0
 
 mkdir -p "$TEMPDIR"
 cp "${SCRIPT_DIR}"/* "$TEMPDIR"
 
 list_partitions() {
-
     echo "-------------------------------"
-    echo "welcome to appleboot!"
+    echo "welcome to the appleboot bootloader!"
     echo "version v${SCRIPT_VERSION}. ${SCRIPT_TYPE} edition"
+    echo "rescue mode: ${rescue_status}"
     echo "-------------------------------"
     echo "available appleboot_rootfs volumes:"
 
@@ -53,16 +54,28 @@ list_partitions() {
 selection_loop(){
     while :; do
         echo "-------------------------------"
-        echo "(q to exit, m to manually specify a root disk)"
+        echo "other options:"
+        echo " m) manually specify your root disk"
+        echo " r) toggle rescue mode"
+        echo " q) exit"
+        echo "-------------------------------"
         printf "enter selection: "
         read sel
 
-        if [ "$sel" -eq "q" ] 2>/dev/null; then
+        if [ "$sel" = "q" ] 2>/dev/null; then
             echo "exiting by user's choice..."
             exit 0
         fi
 
-        if [ "$sel" -eq "m" ] 2>/dev/null; then
+        if [ "$sel" = "r" ] 2>/dev/null; then
+            rescue_status=$(( ! rescue_status ))
+            # no need to echo anything, the rescue mode status will update itself when we list the partitions.
+            clear
+            list_partitions
+            continue
+        fi
+
+        if [ "$sel" = "m" ] 2>/dev/null; then
             printf "enter your desired root disk (e.g. /dev/sda2): "
             read DISK
             if [ ! -b "$DISK" ]; then
@@ -108,4 +121,4 @@ selection_loop
 echo "Selected appleboot_rootfs partition: $DISK"
 
 # hand off to init.sh
-exec "${TEMPDIR}/init.sh" "$SCRIPT_DIR" "$TEMPDIR" "$DISK"
+exec "${TEMPDIR}/init.sh" "$SCRIPT_DIR" "$TEMPDIR" "$DISK" "$rescue_status"

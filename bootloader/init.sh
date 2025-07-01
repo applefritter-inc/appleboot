@@ -4,6 +4,7 @@ ORIGINAL_SCRIPT_DIR=$1
 PAYLOAD_FILE="$2/payload.sh"
 CLAMIDE_BIN="$2/clamide"
 MAIN_DISK_DEV="$3"
+RESCUE_MODE="$4"
 # echos in this file would be almost impossible to see lol
 
 echo "unmounting payload disk, since all our payloads have been copied to PAYLOAD_FILE..."
@@ -18,6 +19,6 @@ fi
 
 echo "hijacking pid 1..."
 sleep 1
-$CLAMIDE_BIN -p 1 --syscall execve "str:$PAYLOAD_FILE" "arr:str:$PAYLOAD_FILE,str:$MAIN_DISK_DEV,int:0" "int:0" # hijack PID 1 and make it call our payload
+$CLAMIDE_BIN -p 1 --syscall execve "str:$PAYLOAD_FILE" "arr:str:$PAYLOAD_FILE,str:$MAIN_DISK_DEV,str:$RESCUE_MODE,int:0" "int:0" # hijack PID 1 and make it call our payload
 
 sleep infinity

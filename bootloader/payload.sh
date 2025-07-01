@@ -8,6 +8,7 @@ RESCUE_SHELL="/bin/bash"
 TTY=0
 MINIOS_SHELL_RUN="/dev/pts/$TTY"
 APPLEBOOT_VOLUME=$1
+RESCUE_MODE=$2
 
 open_shell() { # this means that something went very wrong, probably because the root disk is broken. this should only happen if the user manually selects a root disk, and the root disk didnt have a rootfs.
     local tty=$1
@@ -42,7 +43,6 @@ copy_modules_to_rootfs() {
 }
 
 main(){
-    rescue_enabled=0 # temp, until i find a way to activate rescue mode
     target=$1 # expected like /dev/sda2 or something
     mkdir -p "$NEWROOT_DIR"
     mount -v "$target" "$NEWROOT_DIR"
@@ -70,11 +70,12 @@ main(){
     switch_root_cmd_rescue="switch_root -c /dev/console $NEWROOT_DIR $RESCUE_SHELL -i"
 
     # TODO(appleflyer): find a way for us to activate rescue mode
-    if [ "$rescue_enabled" -ne 0 ]; then
+    if [ "$RESCUE_MODE" -ne 0 ]; then
         switch_root_cmd=$switch_root_cmd_rescue
+        export TERM=vt100
         
         printf "\n"
-        echo "entering rescue mode..."
+        echo "entering rescue mode in the rootfs..."
         echo "tip: once you're done, you can run 'exec /sbin/init' to continue booting into the system! (we are in the appleboot rootfs)"
         printf "\n"
 
@@ -169,7 +170,7 @@ printf "\n"
 sleep 2
 
 debug_kernel_settings
-main "$APPLEBOOT_VOLUME" # $1 is the appleboot rootfs
+main "$APPLEBOOT_VOLUME" "$RESCUE_MODE"
 
 # how did we end up here?
 sleep infinity # will kernel panic if we dont sleep

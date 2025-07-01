@@ -24,8 +24,35 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 7. open the VT3 with `CTRL+ALT+F3`
 8. find the usb stick identifier with `fdisk -l`
 9. when you've found the disk identifier, run the payload with `mount /dev/sdX1 /usb && /usb/main.sh` 
-10. select your appleboot root disk with the selector, or select a disk manually.
+10. select your appleboot root disk with the bootloader, or select a disk manually.
 11. you will then proceed to boot into debian!
+
+## rescue mode
+somehow, if you messed something up on your root system, appleboot offers a rescue mode.
+1. enter the appleboot bootloader, which is steps 1-9 in the [how to use](#how-to-use) section.
+2. select the option "r".
+3. select your rootfs volume to enter rescue mode on that volume.
+4. you will be given a bash shell after mounts are set up.
+
+when you enable rescue mode, the "rescue mode:" line in the bootloader will change from 0 to 1. \
+below demonstrates the bootloader when you enable rescue mode.
+
+```
+-------------------------------
+welcome to the appleboot bootloader!
+verson v1.0. stable edition
+rescue mode: 1        <---- 1 means that rescue mode is enabled.
+-------------------------------
+available appleboot_rootfs volumes:
+ 1) /dev/sda2        4G  appleboot_rootfs:debian
+-------------------------------
+other options:
+ m) manually specify your root disk
+ r) toggle rescue mode
+ q) exit
+-------------------------------
+enter selection:
+```
 
 ## credits
 - [appleflyer](https://github.com/appleflyerv3): finding [BadApple](https://github.com/applefritter-inc/BadApple), writing the scripts
