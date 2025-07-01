@@ -86,7 +86,7 @@ partition_disk() {
     echo "+${bootloader_size}M" #partition size is 1M
     # change the partition type, if not it will stay as 'linux filesystem'
     echo t #change type
-    echo 1 #partition 1
+    #echo 1 since this is the only partition as of now, partition 1 is auto selected
     echo 1 #type 1, which is W95 FAT32
 
     #create rootfs partition
