@@ -9,8 +9,11 @@ currently, only `debian` is supported. would i add support for more distros in t
 1. your board must be disk layout v3 \
 this project supports all boards that are on disk layout v3, list here:
 ```
-nissa, skyrim, guybrush, corsola, rex, brya, brox, skywalker, rauru, cherry, geralt
+nissa, skyrim, guybrush, corsola, rex, brya, brox, rauru, cherry, geralt
 ```
+but, if your board has shims/is not keyrolled, you should use [shimboot](https://github.com/ading2210/shimboot) instead.
+the only board on this list that has shims, and is not keyrolled, is `brya`
+
 2. your crOS version must be `<v132`, and if you have upgraded previously, you cannot downgrade anymore. \
 you must not have upgraded to crOS v132, or else this would NOT work, because BadApple has been patched on that version.
 
