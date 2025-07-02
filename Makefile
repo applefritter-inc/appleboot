@@ -1,4 +1,4 @@
-SHELL   := /bin/bash
+SHELL := /bin/bash
 BUILDER := main.sh
 
 .PHONY: require-root all run clean help
