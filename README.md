@@ -87,7 +87,7 @@ other options:
 enter selection:
 ```
 
-## i messed up rootfs
+## i messed up rootfs, but not my bootloader!
 *this guide is different from the usbless guide!!* \
 *this only works if your bootloader still exists. if it doesn't, you will need to use the usbless guide. the usbless guide can also install the rootfs to another usb if needed.*
 
