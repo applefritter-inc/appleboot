@@ -24,6 +24,7 @@ there are 2 ways of using appleboot.
 
 ### usb guide
 1. go to `Releases` and grab a copy of appleboot for your architecture. e.g. amd64 boards is `appleboot-amd64.bin` \
+
 amd64 boards
 ```
 nissa, skyrim, guybrush, rex, brya, brox
