@@ -23,7 +23,7 @@ there are 2 ways of using appleboot.
 2. usbless guide(does not require a usb)
 
 ### usb guide
-1. go to `Releases` and grab a copy of appleboot for your architecture. e.g. amd64 boards is `appleboot-amd64.bin` \
+1. go to `Releases` and grab a copy of appleboot for your architecture. e.g. amd64 boards is `appleboot-amd64.bin` 
 
 amd64 boards
 ```
