@@ -18,6 +18,7 @@ the only board on this list that has shims, and is not keyrolled, is `brya`
 you must not have upgraded to crOS v132, or else this would NOT work, because BadApple has been patched on that version.
 
 ## how to use
+**USB instructions:**
 1. go to `Releases` and grab a copy of appleboot for your board. e.g. `appleboot-nissa.bin` for the nissa board.
 2. download and flash the image to a USB stick, as how you would with an RMA shim.
 3. on your chromebook, enter developer mode with `ESC+REFRESH+POWER` and `CTRL+D`
@@ -28,8 +29,18 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 8. find the usb stick identifier with `fdisk -l`
 9. when you've found the disk identifier, run the payload with `mount /dev/sdX1 /usb && /usb/main.sh` 
 10. select your appleboot root disk with the bootloader, or select a disk manually.
-11. you will then proceed to boot into debian!
+11. you will then proceed to boot into debian! \
 
+**USBLESS instructions:**
+1. on your chromebook, enter developer mode with `ESC+REFRESH+POWER` and `CTRL+D`
+2. when you reach the block screen, press `ESC+REFRESH+POWER` again
+3. select `Internet Recovery`
+4. Go through the prompts until connected to wifi, once connected to wifi **STOP**
+5. open the VT3 with `CTRL+ALT+F3`
+6. Type in this command
+```bash
+curl -LO <cdnurl>/usblessappleboot.sh && sh usblessappleboot.sh
+```
 ## rescue mode
 somehow, if you messed something up on your root system, appleboot offers a rescue mode.
 1. enter the appleboot bootloader, which is steps 1-9 in the [how to use](#how-to-use) section.
