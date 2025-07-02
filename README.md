@@ -37,7 +37,11 @@ you must not have upgraded to crOS v132, or else this would NOT work, because Ba
 3. select `Internet Recovery`
 4. Go through the prompts until connected to wifi, once connected to wifi **STOP**
 5. open the VT3 with `CTRL+ALT+F3`
-6. Type in this command
+6. Run this command to setup rootfs (first boot)
+```bash
+curl -LO <cdnurl>/usblessapplebootsetup.sh && sh usblessapplebootsetup.sh
+```
+Then run this command each time after.
 ```bash
 curl -LO <cdnurl>/usblessappleboot.sh && sh usblessappleboot.sh
 ```
