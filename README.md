@@ -86,7 +86,7 @@ enter selection:
 ```
 
 ## i messed up rootfs
-*this guide is different from the usbless guide!!*
+*this guide is different from the usbless guide!!* \
 *this only works if your bootloader still exists. if it doesn't, you will need to use the usbless guide. the usbless guide can also install the rootfs to another usb if needed.*
 
 somehow, if you really really messed something up on your root system, e.g. rm -rf'ing your entire system, you still have a chance to recover. \
