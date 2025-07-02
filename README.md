@@ -46,7 +46,7 @@ corsola, rauru, cherry, geralt
 11. you will then proceed to boot into debian!
 
 ### usbless guide
-1. enter miniOS, which is steps 1-5 in the [how to use](#how-to-use) section.
+1. enter miniOS, which is steps 3-5 in the [usb guide](#usb-guide) section.
 2. when miniOS loads, click `Next` to move to the next page
 3. connect to a network on the `Connect to a network to begin recovery` page
 4. once you connect to the internet, you will see a `Start recovery` page. DO NOT PROCEED.
@@ -62,7 +62,7 @@ note: you only need to install the rootfs once. after which, you may skip step 7
 
 ## rescue mode
 somehow, if you messed something up on your root system, appleboot offers a rescue mode.
-1. enter the appleboot bootloader, which is steps 1-9 in the [how to use](#how-to-use) section.
+1. enter the appleboot bootloader, which is steps 3-9 in the [usb guide](#usb-guide) section.
 2. select the option `r` to toggle rescue mode.
 3. select your rootfs volume to enter rescue mode on that volume.
 4. you will be given a bash shell after mounts are set up.
@@ -94,7 +94,7 @@ enter selection:
 somehow, if you really really messed something up on your root system, e.g. rm -rf'ing your entire system, you still have a chance to recover. \
 since miniOS has the ability to connect to networking, all you need to do is:
 
-1. enter miniOS, which is steps 1-5 in the [how to use](#how-to-use) section.
+1. enter miniOS, which is steps 3-5 in the [usb guide](#usb-guide) section.
 2. when miniOS loads, click `Next` to move to the next page
 3. connect to a network on the `Connect to a network to begin recovery` page
 4. once you connect to the internet, you will see a `Start recovery` page. DO NOT PROCEED.
