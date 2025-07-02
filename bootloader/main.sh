@@ -60,7 +60,9 @@ list_partitions() {
     echo "-------------------------------"
     echo "welcome to the appleboot bootloader!"
     echo "version v${SCRIPT_VERSION}. ${SCRIPT_TYPE} edition"
-    echo "rescue mode: ${rescue_status}"
+    printf "\n"
+    echo "rescue mode?: ${rescue_status}"
+    echo "internet rootfs download enabled?: ${internet_install_rootfs}"
     echo "-------------------------------"
     echo "available appleboot_rootfs volumes:"
 
