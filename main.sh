@@ -87,7 +87,7 @@ partition_disk() {
     # change the partition type, if not it will stay as 'linux filesystem'
     echo t #change type
     #echo 1 since this is the only partition as of now, partition 1 is auto selected
-    echo 0700 # for microsoft basic data partition
+    echo 11 # for microsoft basic data partition
 
     #create rootfs partition
     echo n #new partition
