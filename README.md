@@ -52,8 +52,8 @@ corsola, rauru, cherry, geralt
 4. once you connect to the internet, you will see a `Start recovery` page. DO NOT PROCEED.
 5. open the VT3 with `CTRL+ALT+F3` to enter BadApple
 6. start the bootloader with `cd / && curl -LOk appleboot.appleflyer.xyz/usbless.sh && sh usbless.sh`
-7. you will be presented with the option `i` to download an appleboot rootfs from the internet, onto an existing partition. 
-PLEASE install it on the stateful partition, do not install it on the root disk DIRECTLY (e.g. don't select /dev/mmcblk0), or you may not be able to boot into appleboot again once you restart. 
+7. you will be presented with the option `i` to download an appleboot rootfs from the internet, onto an existing partition. \
+PLEASE install it on the stateful partition, do not install it on the root disk DIRECTLY (e.g. don't select /dev/mmcblk0), or you may not be able to boot into appleboot again once you restart. \
 (you may install it onto a usb stick partition too, if you want)
 8. once you download the rootfs, boot into appleboot by selecting your appleboot root disk from the bootloader.
 9. you will proceed to boot into debian.
