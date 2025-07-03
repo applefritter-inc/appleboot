@@ -134,7 +134,6 @@ selection_loop(){
                     echo " q) return to bootloader"
                     echo "-------------------------------"
                     printf "enter selection: "
-                    
                     read sel2
                     
                     if [ "$sel2" = "q" ] 2>/dev/null; then
@@ -176,10 +175,10 @@ selection_loop(){
                     echo "WIP"
                     break
                     
-                    local image_url="https://something.com/appleboot-${board}_rootfs.bin"
+                    local image_url="https://something.com/appleboot-${arch}_rootfs.bin" # this is not the normal image, this is a stripped rootfs from the original image.
                     local target_disk="/dev/targetp1"
 
-                    curl -# -L ${image_url} | sudo dd of=${install_disk} bs=4M conv=fsync
+                    curl -# -L ${image_url} | dd of=${install_disk} bs=4M conv=fsync
 
                     break
                 done

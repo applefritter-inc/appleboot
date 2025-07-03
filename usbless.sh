@@ -1,0 +1,28 @@
+#!/bin/bash
+
+DL_PATH="/temp/"
+BOOTLOADER_FILES="clamide init.sh main.sh payload.sh"
+URL="https://raw.githubusercontent.com/applefritter-inc/appleboot/refs/heads/main/bootloader/"
+INTERNET_BOOTLOADER_MAGIC="download_rootfs_force"
+
+if ping -c 1 -W 2 github.com >/dev/null 2>&1; then
+    echo "github.com reachable! proceeding with usbless bootloader."
+else
+    echo "FATAL: could not reach github.com! exiting..."
+    exit 1
+fi
+
+echo "making ${DL_PATH}..."
+mkdir -p $DL_PATH # bootloader files
+
+echo "downloading bootloader files..."
+for dl in $BOOTLOADER_FILES; do
+    echo "downloading ${dl}"
+    curl -Lk "${URL}${dl}" -o "${DL_PATH}${dl}"
+done
+
+echo "setting necessary permissions..."
+chmod +x "${DL_PATH}"*
+
+echo "executing bootloader..."
+${DL_PATH}/main.sh "$INTERNET_BOOTLOADER_MAGIC"
