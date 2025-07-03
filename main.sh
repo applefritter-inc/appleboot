@@ -9,7 +9,7 @@ ROOTFS_DIR="rootfs-chroot"
 RECO_ZIP="reco.zip"
 APPLEBOOT_IMAGE="appleboot-${BOARD}.bin"
 DELETE_ESSENTIAL="y"
-DEPENDENCIES="cpio realpath mkfs.ext4 mkfs.vfat fdisk debootstrap findmnt wget git make"
+DEPENDENCIES="cpio realpath mkfs.ext4 mkfs.vfat fdisk debootstrap findmnt wget git make sgdisk"
 
 fatal_exit() {
     echo "FATAL: $1"
