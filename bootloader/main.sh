@@ -185,6 +185,7 @@ selection_loop(){
 
                 # return to original bootloader
                 clear
+                echo "returned from install rootfs menu."
                 list_partitions
                 continue
             fi
