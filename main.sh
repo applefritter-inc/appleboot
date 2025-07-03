@@ -11,16 +11,15 @@ APPLEBOOT_IMAGE="appleboot-${BOARD}.bin"
 DELETE_ESSENTIAL="y"
 DEPENDENCIES="cpio realpath mkfs.ext4 mkfs.vfat fdisk debootstrap findmnt wget git make"
 
-if [ "$EUID" -ne 0 ]; then
-    echo "the builder is not running as root!! please ensure you run this as root/sudo."
-    exit 1
-fi
-
 fatal_exit() {
     echo "FATAL: $1"
     echo "this is fatal, exiting..."
     exit 1
 }
+
+if [ "$EUID" -ne 0 ]; then
+    fatal_exit "the builder is not running as root!! please ensure you run this as root/sudo."
+fi
 
 check_dependencies() {
     local dep_array=$1
@@ -32,8 +31,7 @@ check_dependencies() {
     done
 
     if [ ${#missing[@]} -ne 0 ]; then
-        echo "missing dependencies: ${missing[*]}"
-        exit 1
+        fatal_exit "missing dependencies: ${missing[*]}"
     fi
 }
 
@@ -124,6 +122,7 @@ echo "if the script fails, the script will immediately exit at that point. if yo
 echo "please report the issue on github"
 
 # make our debian rootfs
+echo "bootstrapping rootfs..."
 ./builder/build.sh "$ROOTFS_DIR"
 
 if [ -z "${RECO_BIN}" ]; then
@@ -132,6 +131,7 @@ if [ -z "${RECO_BIN}" ]; then
 fi
 
 # patch the built rootfs with chromeOS kernel modules
+echo "patching rootfs..."
 ./builder/patch.sh "$ROOTFS_DIR" "$RECO_BIN"
 
 # calculate rootfs size to build image
@@ -139,6 +139,7 @@ rootfs_size="$(du -sm "$ROOTFS_DIR" | cut -f 1)"
 rootfs_part_size=$(( rootfs_size * 12 / 10 + 5 ))
 
 # create image
+echo "creating appleboot image..."
 create_image "$APPLEBOOT_IMAGE" 20 "$rootfs_part_size" "debian"
 appleboot_loop=$(losetup -f --show -P "$APPLEBOOT_IMAGE")
 
@@ -146,6 +147,7 @@ appleboot_loop=$(losetup -f --show -P "$APPLEBOOT_IMAGE")
 sgdisk -e "$appleboot_loop"
 
 # partition disks
+echo "partitioning image..."
 mkfs.vfat -F 16 -n BOOTLOADER "${appleboot_loop}p1" # bootloader
 mkfs.ext4 "${appleboot_loop}p2" # rootfs
 
