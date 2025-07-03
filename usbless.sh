@@ -5,10 +5,10 @@ BOOTLOADER_FILES="clamide init.sh main.sh payload.sh"
 URL="https://raw.githubusercontent.com/applefritter-inc/appleboot/refs/heads/main/bootloader/"
 INTERNET_BOOTLOADER_MAGIC="download_rootfs_force"
 
-if ping -c 1 -W 2 github.com >/dev/null 2>&1; then
-    echo "github.com reachable! proceeding with usbless bootloader."
+if ping -c 1 -W 2 google.com >/dev/null 2>&1; then
+    echo "internet reachable! proceeding with usbless bootloader."
 else
-    echo "FATAL: could not reach github.com! exiting..."
+    echo "FATAL: could not reach google.com! connection test failed! exiting..."
     exit 1
 fi
 
@@ -19,6 +19,14 @@ echo "downloading bootloader files..."
 for dl in $BOOTLOADER_FILES; do
     echo "downloading ${dl}"
     curl -Lk "${URL}${dl}" -o "${DL_PATH}${dl}"
+    dl_status=$(curl -Lk -w "%{http_code}" -s -o "${DL_PATH}${dl}" "${URL}${dl}")
+    if [ "$dl_status" -eq 200 ]; then
+        echo "download succeeded!"
+    else
+        echo "FATAL: download failed with status ${dl_status}"
+        exit 1
+    fi
+
 done
 
 echo "setting necessary permissions..."
