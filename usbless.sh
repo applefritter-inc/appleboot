@@ -18,8 +18,7 @@ mkdir -p $DL_PATH # bootloader files
 echo "downloading bootloader files..."
 for dl in $BOOTLOADER_FILES; do
     echo "downloading ${dl}"
-    curl -Lk "${URL}${dl}" -o "${DL_PATH}${dl}"
-    dl_status=$(curl -Lk -w "%{http_code}" -s -o "${DL_PATH}${dl}" "${URL}${dl}")
+    dl_status=$(curl -LksS -w "%{http_code}" -o "${DL_PATH}${dl}" "${URL}${dl}")
     if [ "$dl_status" -eq 200 ]; then
         echo "download succeeded!"
     else
