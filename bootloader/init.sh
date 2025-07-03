@@ -1,13 +1,14 @@
 #!/bin/sh +x
 
 ORIGINAL_SCRIPT_DIR=$1
-PAYLOAD_FILE="$2/payload.sh"
-CLAMIDE_BIN="$2/clamide"
+TEMP_SCRIPT_DIR=$2
+PAYLOAD_FILE="${TEMP_SCRIPT_DIR}/payload.sh"
+CLAMIDE_BIN="${TEMP_SCRIPT_DIR}/clamide"
 MAIN_DISK_DEV="$3"
 RESCUE_MODE="$4"
 # echos in this file would be almost impossible to see lol
 
-echo "unmounting payload disk, since all our payloads have been copied to PAYLOAD_FILE..."
+echo "unmounting payload disk, since all our payloads have been copied to TEMP_SCRIPT_DIR..."
 umount $ORIGINAL_SCRIPT_DIR
 
 echo "enabling ptrace..."
