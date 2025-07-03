@@ -69,7 +69,6 @@ main(){
     switch_root_cmd="switch_root -c /dev/ttyS0 $NEWROOT_DIR /sbin/init"
     switch_root_cmd_rescue="switch_root -c /dev/console $NEWROOT_DIR $RESCUE_SHELL -i"
 
-    # TODO(appleflyer): find a way for us to activate rescue mode
     if [ "$RESCUE_MODE" -ne 0 ]; then
         switch_root_cmd=$switch_root_cmd_rescue
         export TERM=vt100
