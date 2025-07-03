@@ -5,6 +5,7 @@ TEMP_SCRIPT_DIR=$2
 PAYLOAD_FILE="${TEMP_SCRIPT_DIR}/payload.sh"
 CLAMIDE_BIN="${TEMP_SCRIPT_DIR}/clamide"
 MAIN_DISK_DEV="$3"
+RESCUE_MODE="$4"
 
 echo "unmounting payload disk, since all our payloads have been copied to TEMP_SCRIPT_DIR..."
 umount $ORIGINAL_SCRIPT_DIR
