@@ -59,12 +59,6 @@ main(){
     echo "sleeping for 2 seconds..."
     sleep 2
 
-    if [ ! -L "${NEWROOT_DIR}/sbin/init" ]; then # this checks if the /sbin/init symlink exists, not its target. since we aren't in the nrw root filesystem yet, it's target will point to nothing.
-        # we cannot recover from this point, it is very difficult for the end user to recover from here. instead, we shall drop to rescue mode.
-        echo "/sbin/init does not exist on the newroot! dropping to a shell...(we are still in miniOS)"
-        open_shell /console/vt0
-    fi
-
     # /dev/ttyS0 for debugging with SuzyQ on a dev miniOS image.
     switch_root_cmd="switch_root -c /dev/ttyS0 $NEWROOT_DIR /sbin/init"
     switch_root_cmd_rescue="switch_root -c /dev/console $NEWROOT_DIR $RESCUE_SHELL -i"
@@ -81,6 +75,14 @@ main(){
         # enable input
         printf "\033[?25h" > "/console/vt0"
         printf "\033]input:on\a" > "/console/vt0"
+    fi
+
+    if ["$RESCUE_MODE" -eq 0 ]; then
+        if [ ! -L "${NEWROOT_DIR}/sbin/init" ]; then # this checks if the /sbin/init symlink exists, not its target. since we aren't in the nrw root filesystem yet, it's target will point to nothing.
+            # we cannot recover from this point, it is very difficult for the end user to recover from here. instead, we shall drop to rescue mode.
+            echo "/sbin/init does not exist on the newroot! dropping to a shell...(we are still in miniOS)"
+            open_shell /console/vt0
+        fi
     fi
 
     exec $switch_root_cmd || {
