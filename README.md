@@ -115,6 +115,6 @@ since miniOS has the ability to connect to networking, all you need to do is:
 1. install the dependencies, which are: `cpio realpath mkfs.ext4 mkfs.vfat fdisk debootstrap findmnt wget git make sgdisk`
 2. clone the repository and enter it with
 ```sh
-git clone https://github.com/applefritter-inc/ && sudo make run BOARD=<board>
+git clone https://github.com/applefritter-inc/appleboot && cd appleboot && sudo make run BOARD=<board>
 ```
 3. once it's done, the image should appear as `appleboot-*.bin`, e.g. `appleboot-nissa.bin`
