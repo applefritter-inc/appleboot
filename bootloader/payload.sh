@@ -77,7 +77,7 @@ main(){
         printf "\033]input:on\a" > "/console/vt0"
     fi
 
-    if ["$RESCUE_MODE" -eq 0 ]; then
+    if [ "$RESCUE_MODE" -eq 0 ]; then
         if [ ! -L "${NEWROOT_DIR}/sbin/init" ]; then # this checks if the /sbin/init symlink exists, not its target. since we aren't in the nrw root filesystem yet, it's target will point to nothing.
             # we cannot recover from this point, it is very difficult for the end user to recover from here. instead, we shall drop to rescue mode.
             echo "/sbin/init does not exist on the newroot! dropping to a shell...(we are still in miniOS)"
