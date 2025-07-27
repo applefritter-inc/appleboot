@@ -26,6 +26,8 @@ if [ $internet_install_rootfs -ne 1 ]; then # if we didnt boot with the usbless 
     fi
 fi
 
+internet_install_rootfs=0 # disable, because this shouldn't be used in production yet
+
 mkdir -p "$TEMPDIR"
 cp "${SCRIPT_DIR}"/* "$TEMPDIR"
 
