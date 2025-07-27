@@ -1,3 +1,5 @@
+# **ONLY NISSA PREBUILTS ARE AVAILABLE NOW**
+
 # appleboot
 this project allows you to boot linux on keyrolled devices with code execution in miniOS whilst in developer mode. \
 it is heavily built on the way that shimboot works, albeit with a lot of modifications. \
@@ -23,17 +25,19 @@ there are 2 ways of using appleboot.
 2. usbless guide(does not require a usb)
 
 ### usb guide
-1. go to `Releases` and grab a copy of appleboot for your architecture. e.g. amd64 boards is `appleboot-amd64.bin` 
+# **ONLY NISSA IS AVAILABLE NOW**
+1. go to `Releases` and grab a copy of appleboot for your architecture. ~~e.g. amd64 boards is `appleboot-amd64.bin`~~
 
-amd64 boards
+~~amd64 boards~~
 ```
 nissa, skyrim, guybrush, rex, brya, brox
 ```
 
-arm64 boards
+~~arm64 boards~~
 ```
 corsola, rauru, cherry, geralt
 ```
+
 2. download and flash the image to a USB stick, as how you would with an RMA shim.
 3. on your chromebook, enter developer mode with `ESC+REFRESH+POWER` and `CTRL+D`
 4. when you reach the block screen, press `ESC+REFRESH+POWER` again
