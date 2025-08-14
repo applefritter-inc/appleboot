@@ -26,8 +26,6 @@ if [ $internet_install_rootfs -ne 1 ]; then # if we didnt boot with the usbless 
     fi
 fi
 
-internet_install_rootfs=0 # disable, because this shouldn't be used in production yet
-
 mkdir -p "$TEMPDIR"
 cp "${SCRIPT_DIR}"/* "$TEMPDIR"
 
@@ -177,7 +175,7 @@ selection_loop(){
                     echo "WIP"
                     break
                     
-                    local image_url="https://something.com/appleboot-${arch}_rootfs.bin" # this is not the normal image, this is a stripped rootfs from the original image.
+                    local image_url="https://ddl.fanqyxl.net/ChromeOS/appleboot/${arch}_rootfs.bin" # this is not the normal image, this is a stripped rootfs from the original image.
                     local target_disk="/dev/targetp1"
 
                     curl -# -L ${image_url} | dd of=${install_disk} bs=4M conv=fsync
